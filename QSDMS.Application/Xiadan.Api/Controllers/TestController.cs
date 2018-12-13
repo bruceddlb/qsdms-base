@@ -25,6 +25,7 @@ namespace Xiadan.Api.Controllers
             var result = new ReturnMessage(false) { Message = "获取信息!" };
             try
             {
+
                 var list = BannerBLL.Instance.GetList(null);
                 result.IsSuccess = true;
                 result.Message = "获取成功";
