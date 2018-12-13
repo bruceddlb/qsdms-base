@@ -1,0 +1,75 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+</head>
+<body>
+    <div id="process" class="section4">
+        <div class="node fore ready">
+            <ul>
+                <li class="tx1">&nbsp;</li>
+                <li class="tx2" style="padding-left: 20px">提交订单</li>
+                <li class="tx3" style="padding-left: 80px">
+                    {$:order.OrderTime}
+                </li>
+            </ul>
+        </div>
+        <div class="proce  ready ">
+            <ul>
+                <li class="tx1">&nbsp;</li>
+            </ul>
+        </div>
+        <vt:if var="order.OrderStatus" value="-1">
+            <div class="node  ready">
+                <ul>
+                    <li class="tx1">&nbsp;</li>
+                    <li class="tx2">订单关闭</li>
+                    <li class="tx3"></li>
+                </ul>
+            </div>
+            <vt:else>
+                <vt:if var="order.PayStatus" value="0">
+                    <div class="node  wait">
+                        <ul>
+                            <li class="tx1">&nbsp;</li>
+                            <li class="tx2">暂未支付</li>
+                            <li class="tx3"></li>
+                        </ul>
+                    </div>
+                    <div class=" proce  wait ">
+                        <ul>
+                            <li class="tx1">&nbsp;</li>
+                        </ul>
+                    </div>
+                    <vt:elseif value="1">
+                        <div class="node ready">
+                            <ul>
+                                <li class="tx1">&nbsp;</li>
+                                <li class="tx2">支付确认中</li>
+                                <li class="tx3"></li>
+                            </ul>
+                        </div>
+                        <div class=" proce doing ">
+                            <ul>
+                                <li class="tx1">&nbsp;</li>
+                            </ul>
+                        </div>
+                        <vt:elseif value="2">
+                            <div class="node  ready">
+                                <ul>
+                                    <li class="tx1">&nbsp;</li>
+                                    <li class="tx2">付款成功</li>
+                                    <li class="tx3"></li>
+                                </ul>
+                            </div>
+                            <div class=" proce  ready ">
+                                <ul>
+                                    <li class="tx1">&nbsp;</li>
+                                </ul>
+                            </div>
+                </vt:if>
+        </vt:if>
+    </div>
+</body>
+</html>

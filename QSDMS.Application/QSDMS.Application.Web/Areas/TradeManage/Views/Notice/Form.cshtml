@@ -1,0 +1,66 @@
+﻿@{
+    ViewBag.Title = "编辑";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Head{
+
+}
+<script>
+    var keyValue = request('keyValue');//获得主键
+    $(function () {
+
+        initControl();
+
+    })
+    //初始化控件
+    function initControl() {
+
+        //获取表单
+        if (!!keyValue) {
+            $.SetForm({
+                url: "/TradeManage/Notice/GetFormJson",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    $("#form1").SetWebControls(data);
+
+                }
+            });
+        } else {
+
+        }
+    }
+    //保存表单
+    function AcceptClick() {
+        if (!$('#form1').Validform()) {
+            return false;
+        }
+        var postData = $("#form1").GetWebControls(keyValue);
+        $.SaveForm({
+            url: "/TradeManage/Notice/SaveForm?keyValue=" + keyValue,
+            param: postData,
+            loading: "正在保存数据...",
+            success: function () {
+                $.currentIframe().$("#gridTable").trigger("reloadGrid");
+            }
+        })
+    }
+
+</script>
+
+<div style="margin-top: 20px; margin-right: 30px;">
+    <table class="form" style="table-layout: auto;">      
+        <tr>
+            <td class="formTitle">标题</td>
+            <td class="formValue" colspan="3">
+                <input id="NoticeTitle" type="text" class="form-control" placeholder="请输入标题" isvalid="yes" checkexpession="NotNull" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">消息内容</td>
+            <td class="formValue" colspan="3">
+                <input id="NoticeContent" type="text" class="form-control" style="height: 70px;" />
+            </td>
+        </tr>
+
+    </table>
+</div>

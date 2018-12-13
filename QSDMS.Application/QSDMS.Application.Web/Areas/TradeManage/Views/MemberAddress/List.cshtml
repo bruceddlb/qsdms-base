@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "地址列表";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+}
+<script>
+    var memberid = request('memberid');
+    $(function () {
+        InitialPage();
+        GetGrid();
+    });
+    //初始化页面
+    function InitialPage() {
+        //resize重设(表格、树形)宽高
+        $(window).resize(function (e) {
+            window.setTimeout(function () {
+                $('#gridTable').setGridWidth(($('.gridPanel').width()));
+                $("#gridTable").setGridHeight($(window).height() - 160);
+            }, 200);
+            e.stopPropagation();
+        });
+    }
+    //加载表格
+    function GetGrid() {
+        var selectedRowIndex = 0;
+        var $gridTable = $("#gridTable");
+        var queryJson = {};
+        queryJson["memberid"] = memberid;
+        $gridTable.jqGrid({
+            url: "/TradeManage/MemberAddress/GetPageListJson",
+            datatype: "json",
+            postData: { queryJson: JSON.stringify(queryJson) },
+            height: $(window).height() - 160,
+            autowidth: true,
+            colModel: [
+                { label: '主键', name: 'AddressId', hidden: true },
+                { label: '联系人', name: 'Consignee', ItemNameindex: 'Consignee', width: 200, align: 'center', sortable: false },
+                { label: '联系电话', name: 'Mobile', index: 'Mobile', width: 200, align: 'center', sortable: false },
+                { label: '所在省', name: 'ProvinceName', index: 'ProvinceName', width: 150, align: 'center', sortable: false },
+                { label: '所在市', name: 'CityName', index: 'CityName', width: 80, align: 'center' },
+                { label: '详细地址', name: 'Address', index: 'Address', width: 80, align: 'center' },
+                {
+                    label: "是否默认", name: "IsDefault", index: "IsDefault", width: 80, align: "center",
+                    formatter: function (cellvalue) {
+                        return cellvalue == 1 ? "是" : "否";
+                    }
+                }
+                
+            ],
+            viewrecords: true,
+            rowNum: 30,
+            rowList: [30, 50, 100, 500, 1000],
+            pager: "#gridPager",
+            sortname: '',
+            sortorder: 'desc',
+            rownumbers: true,
+            shrinkToFit: false,
+            gridview: true
+
+        });
+
+        $("#btn_Search").click(function () {
+            var queryJson = {};
+            queryJson["keyword"] = $("#txt_Keyword").val();
+            $gridTable.jqGrid('setGridParam', {
+                postData: { queryJson: JSON.stringify(queryJson) }
+            }).trigger('reloadGrid');
+        });
+        //查询回车
+        $('#txt_Keyword').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                $('#btn_Search').trigger("click");
+            }
+        });
+    }
+
+    //新增
+    function btn_add() {
+        dialogOpen({
+            id: "Form",
+            title: '添加地址',
+            url: '/TradeManage/MemberAddress/Form?memberid=' + memberid,
+            width: "500px",
+            height: "370px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].AcceptClick();
+            }
+        });
+    };
+    //编辑
+    function btn_edit() {
+        var keyValue = $("#gridTable").jqGridRowValue("AddressId");
+        if (checkedRow(keyValue)) {
+            dialogOpen({
+                id: "Form",
+                title: '编辑地址',
+                url: '/TradeManage/MemberAddress/Form?keyValue=' + keyValue,
+                width: "500px",
+                height: "370px",
+                callBack: function (iframeId) {
+                    top.frames[iframeId].AcceptClick();
+                }
+            });
+        }
+    }
+    //删除
+    function btn_delete() {
+        var keyValue = $("#gridTable").jqGridRowValue("AddressId");
+        if (keyValue) {
+            $.RemoveForm({
+                url: "/TradeManage/MemberAddress/RemoveForm",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    $("#gridTable").trigger("reloadGrid");
+                }
+            })
+        } else {
+            dialogMsg('请选择需要删除的数据！', 0);
+        }
+    }
+</script>
+<div class="toolbarPanel">
+    <div class="row">
+      
+        <div class="col-md-2">
+            <input id="txt_Keyword" type="text" class="form-control" placeholder="请输入要查询关键字" style="" />
+        </div>
+        <div class="col-md-1">
+            <a id="btn_Search" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询</a>
+        </div>
+        <div class="toolbar">
+            <div class="btn-group animated fadeInDownBig">
+                <a id="btn-replace" class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                <a id="btn-add" class="btn btn-default" onclick="btn_add()"><i class="fa fa-plus"></i>&nbsp;新增</a>
+                <a id="btn-edit" class="btn btn-default" onclick="btn_edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+                <a id="btn-delete" class="btn btn-default" onclick="btn_delete()"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+            </div>
+        </div>
+    </div>
+
+</div><div class="gridPanel">
+    <table id="gridTable"></table>
+    <div id="gridPager" style="padding: 10px; height: 40px; background: #F3F3F4;"></div>
+</div>

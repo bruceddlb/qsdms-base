@@ -1,0 +1,171 @@
+﻿@{
+    ViewBag.Title = "到货列表";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+}
+<script>
+    $(function () {
+        InitialPage();
+        GetGrid();
+
+
+
+    });
+    //初始化页面
+    function InitialPage() {
+        //resize重设(表格、树形)宽高
+        $(window).resize(function (e) {
+            window.setTimeout(function () {
+                $('#gridTable').setGridWidth(($('.gridPanel').width()));
+                $("#gridTable").setGridHeight($(window).height() - 160);
+            }, 200);
+            e.stopPropagation();
+        });
+    }
+    //加载表格
+    function GetGrid() {
+        var selectedRowIndex = 0;
+        var $gridTable = $("#gridTable");
+        var queryJson = {};
+        $gridTable.jqGrid({
+            url: "/TradeManage/Arrival/GetPageListJson",
+            datatype: "json",
+            postData: { queryJson: JSON.stringify(queryJson) },
+            height: $(window).height() - 160,
+            autowidth: true,
+            colModel: [
+                { label: '主键', name: 'ArrivalId', hidden: true },
+                { label: '编号', name: 'BillCode', ItemNameindex: 'BillCode', width: 200, align: 'center', sortable: true },
+                { label: '标题', name: 'Title', index: 'Title', width: 200, align: 'center', sortable: true },
+               {
+                   label: "状态", name: "ArrivalStatus", index: "ArrivalStatus", width: 60, align: "center",
+                   formatter: function (cellvalue, options, rowObject) {
+                       if (cellvalue == '@((int)Trade.Model.Enums.ArrivalStatus.已到货)') {
+                           return "<span class=\"label label-success\">@Trade.Model.Enums.ArrivalStatus.已到货</span>";
+                       } else if (cellvalue == '@((int)Trade.Model.Enums.ArrivalStatus.未到货)') {
+                           return "<span class=\"label label-danger\">@Trade.Model.Enums.ArrivalStatus.未到货</span>";
+                       }
+                   }
+               },
+                { label: '备注', name: 'Remark', index: 'Remark', width: 200, align: 'center', sortable: true },
+
+            ],
+            multiselect: true,
+            viewrecords: true,
+            rowNum: 30,
+            rowList: [30, 50, 100, 500, 1000],
+            pager: "#gridPager",
+            sortname: 'BillCode',
+            sortorder: 'desc',
+            rownumbers: true,
+            shrinkToFit: false,
+            gridview: true
+
+        });
+
+        //查询事件
+        $("#btn_Search").click(function () {
+            var queryJson = {};
+            queryJson["keyword"] = $("#txt_Keyword").val();
+            $gridTable.jqGrid('setGridParam', {
+                postData: { queryJson: JSON.stringify(queryJson) }
+            }).trigger('reloadGrid');
+        });
+        //查询回车
+        $('#txt_Keyword').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                $('#btn_Search').trigger("click");
+            }
+        });
+    }
+
+    function btn_add() {
+        dialogOpen({
+            id: "Form",
+            title: '创建',
+            url: '/TradeManage/Arrival/Form',
+            width: "1100px",
+            height: "850px",
+            callBack: function (iframeId) {
+                top.frames[iframeId].AcceptClick();
+            }
+        });
+    }
+
+    //修改
+    function btn_edit() {
+        var keyValue = $("#gridTable").jqGridRowValue("ArrivalId");
+        if (checkedRow(keyValue)) {
+            dialogOpen({
+                id: "Form",
+                title: '编辑',
+                url: '/TradeManage/Arrival/Form?keyValue=' + keyValue,
+                width: "1100px",
+                height: "850px",
+                callBack: function (iframeId) {
+                    top.frames[iframeId].AcceptClick();
+                }
+            });
+        }
+    }
+    //删除
+    function btn_delete() {
+        var keyValue = $("#gridTable").jqGridRowValue("ArrivalId");
+        if (checkedArray(keyValue)) {
+            $.RemoveForm({
+                url: "/TradeManage/Arrival/RemoveForm",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    $("#gridTable").trigger("reloadGrid");
+                }
+            })
+        } else {
+            dialogMsg('请选择需要删除的数据！', 0);
+        }
+    }
+
+    //导出
+    function btn_export() {
+        var queryJson = {};
+        queryJson["keyword"] = $("#txt_Keyword").val();
+
+        var actionUrl = "/TradeManage/Arrival/ExportExcel";
+        var iscompletedMsg = "iscompletedMsg";
+        var para = "queryJson|" + JSON.stringify(queryJson);
+        doProgressExport(para, actionUrl, iscompletedMsg, "uploadFlag");
+    }
+</script>
+<div class="toolbarPanel">
+    <div class="row">
+        <div class="col-md-2">
+            <input id="txt_Keyword" type="text" class="form-control" placeholder="请输入要查询关键字" style="" />
+        </div>
+
+        <div class="col-md-1">
+            <a id="btn_Search" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询</a>
+        </div>
+
+
+        <div class="toolbar">
+            <div class="btn-group animated fadeInDownBig">
+                <a id="btn-replace" class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                <a id="btn-add" class="btn btn-default" onclick="btn_add()"><i class="fa fa-plus"></i>&nbsp;新建</a>
+                <a id="btn-edit" class="btn btn-default" onclick="btn_edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+                <a id="btn-delete" class="btn btn-default" onclick="btn_delete()"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                <a id="btn-more" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-reorder"></i>&nbsp;更多<span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    <li id="btn-export" class=""><a onclick="btn_export()"><i class="fa fa-sign-out"></i>&nbsp;导出</a></li>
+                </ul>
+                <span style="line-height: 26px" class='' id="uploadFlag">
+                    <span id="iscompletedMsg"
+                          style="display: none;"><font color='red'>正在处理，请稍候...</font></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div><div class="gridPanel">
+    <table id="gridTable"></table>
+    <div id="gridPager" style="padding: 10px; height: 40px; background: #F3F3F4;"></div>
+</div>

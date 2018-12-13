@@ -1,0 +1,92 @@
+﻿@{
+    ViewBag.Title = "编辑";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Head{
+
+}
+<script>
+    var keyValue = request('keyValue');//获得主键
+    $(function () {
+
+
+        $("#ddl_ArrivalStatus").ComboBox({
+            url: "/DataItemEnums/GetArrivalStatus",
+            param: null,
+            id: "ItemId",
+            text: "ItemName",
+            description: "==选择到货状态==",
+            height: "170px"
+        });
+
+        initControl();
+    })
+    //初始化控件
+    function initControl() {
+
+        //获取表单
+        if (!!keyValue) {
+            $.SetForm({
+                url: "/TradeManage/Arrival/GetFormJson",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    $("#form1").SetWebControls(data);
+                    $("#ddl_ArrivalStatus").ComboBoxSetValue(data.ArrivalStatus);
+
+                }
+            });
+        } else {
+
+        }
+    }
+    //保存表单
+    function AcceptClick() {
+        if (!$('#form1').Validform()) {
+            return false;
+        }
+        var postData = $("#form1").GetWebControls(keyValue);
+        postData["ArrivalStatus"] = $("#ddl_ArrivalStatus").attr('data-value');
+        $.SaveForm({
+            url: "/TradeManage/Arrival/SaveForm?keyValue=" + keyValue,
+            param: postData,
+            loading: "正在保存数据...",
+            success: function () {
+                $.currentIframe().$("#gridTable").trigger("reloadGrid");
+            }
+        })
+    }
+
+</script>
+
+<div style="margin-top: 20px; margin-right: 30px;">
+    <table class="form" style="table-layout: auto;">
+        <tr>
+            <td class="formTitle">编号<font face="宋体">*</font></td>
+            <td class="formValue" colspan="3">
+                <input id="BillCode" type="text" class="form-control" placeholder="请输入编号" isvalid="yes" checkexpession="NotNull" />
+            </td>
+        </tr>
+
+
+        <tr>
+            <td class="formTitle">标题<font face="宋体">*</font></td>
+            <td class="formValue" colspan="3">
+                <input id="Title" type="text" class="form-control" placeholder="请输入标题" isvalid="yes" checkexpession="NotNull" />
+            </td>
+        </tr>
+        <tr>
+            <td class="formTitle">到货状态<font face="宋体">*</font></td>
+            <td class="formValue" colspan="3">
+                <div id="ddl_ArrivalStatus" type="select" class="ui-select" style="" isvalid="yes" checkexpession="NotNull"></div>
+            </td>
+        </tr>
+
+        <tr>
+            <td class="formTitle">描述</td>
+            <td class="formValue" colspan="3">
+                <input id="Remark" type="text" class="form-control" style="height: 70px;" maxlength="300" />
+            </td>
+        </tr>
+
+    </table>
+</div>

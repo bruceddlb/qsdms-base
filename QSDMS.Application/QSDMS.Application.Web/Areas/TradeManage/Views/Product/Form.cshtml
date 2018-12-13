@@ -1,0 +1,637 @@
+﻿@{
+    ViewBag.Title = "编辑";
+    Layout = "~/Views/Shared/_LayoutForm.cshtml";
+}
+@section Head{
+
+}
+<script src="/Content/scripts/plugins/touchTouch/touchTouch.jquery.js"></script>
+<link href="/Content/scripts/plugins/touchTouch/touchTouch.css" rel="stylesheet" />
+<script src="~/Content/scripts/plugins/ueditor/ueditor.config.js"></script>
+<script src="~/Content/scripts/plugins/ueditor/ueditor.all.min.js"></script>
+<script>
+    var _ImageList = [];
+    var editor;
+    var dtips;
+    var keyValue = request('keyValue');
+    $(function () {
+        InitialPage();
+        dtips = $("#destips");
+        initRichTextEditor();
+        $("#btn_finish").bind("click", function () {
+            AcceptClick();
+        })
+        $("#btn_addsubject").bind("click", function () {
+            AddSubject(null);
+        })
+        $("#ddlCategoryTree").ComboBoxTree({
+            url: "/TradeManage/Category/GetCategoryTreeJson",
+            description: "==请选择分类==",
+            height: "250px",
+            click: function (item) {
+            }
+        });
+        $("#ddlType").ComboBox({
+            url: "/SystemManage/DataItemDetail/GetDataItemListJson",
+            param: { EnCode: "cpsx" },
+            id: "ItemDetailId",
+            text: "ItemName",
+            description: "==请选择属性==",
+            height: "200px"
+        });
+        $("#ddlShipTemp").ComboBox({
+            url: "/TradeManage/ShopShipTemplates/GetListJson",
+            param: null,
+            id: "ShopShipTemplatesId",
+            text: "Title",
+            description: "==请选择运费模板==",
+            height: "200px"
+        });
+        $("#ddlServiceRule").ComboBox({
+            url: "/TradeManage/ServiceRule/GetListJson",
+            param: null,
+            id: "ServiceRuleId",
+            text: "Title",
+            description: "==请选择服务费模板==",
+            height: "200px"
+        });
+        InitControl();
+
+        //$("#btn_addtag").bind("click", function () {
+        //    var tag = $("#txt_tag").val();
+        //    if (!tag) {
+        //        dialogMsg("请输入规格", 0);
+        //        return;
+        //    }
+        //    AddRule(null);
+        //})
+    });
+
+
+    function initRichTextEditor() {
+        eidtor = UE.getEditor('ProductDescription',
+            {
+                initialFrameHeight: "300"
+            });
+        eidtor.addListener('contentChange', function () {
+            //    editor.sync();
+            dtips.hide();
+        });
+        //同步内容
+        eidtor.addListener("blur", function () {
+            eidtor.sync();
+            var content = eidtor.getContent();
+            if (content.length < 1) {
+                dtips.show();
+            } else {
+                dtips.hide();
+            }
+        })
+        eidtor.ready(function () {
+            eidtor.setHeight(320);
+        });
+
+    };
+    //初始化数据
+    function InitControl() {
+        //定义课程对象
+        if (!!keyValue) {
+            //设置控件值
+            $.SetForm({
+                url: "/TradeManage/Product/GetFormJson",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    if (data != null) {
+                        $("#form1").SetWebControls(data);
+                        //封面
+                        if (data.FaceImag) {
+                            $("#HidFaceImage").val(data.FaceImag);
+                            var host = '@(System.Configuration.ConfigurationManager.AppSettings["ImageHost"] == "" ? string.Format("http://{0}{1}", Request.Url.Host, Request.Url.Port == 80 ? "" : ":" + Request.Url.Port) : System.Configuration.ConfigurationManager.AppSettings["ImageHost"])';
+                            document.getElementById('uploadPreview').src = host + "/file/ProductFaceLogo/" + data.FaceImag;
+                        }
+                        //图片
+                        if (data.AttachmentPicList) {
+                            var html = "";
+                            var imgslist = data.AttachmentPicList;
+                            if (imgslist) {
+                                for (var i = 0; i < imgslist.length; i++) {
+                                    var path = "/file/Product/" + imgslist[i].PicName;
+                                    var path = "@System.Configuration.ConfigurationManager.AppSettings["ImageHost"]" + path;
+                                    html += '<li style=" background:#ccc;position:relative;"><a class="magnifier" href="' + path + '">';
+                                    html += '<img src="' + path + '" filename="' + imgslist[i].PicName + '"/>';
+                                    html += '</a>';
+                                    html += '<i class="" style="position: absolute;left: 60px;bottom: 0px;background:url(/content/images/close11.png);width:32px;height:32px;">&nbsp;&nbsp;&nbsp;&nbsp;</i>';
+                                    html += '</li>';
+                                }
+                                $("#imgs").append(html);
+                                //绑定删除事件
+                                $("#imgs li").each(function () {
+                                    $(this).find("i").bind("click", function () {
+                                        //删除图片
+                                        $(this).parent().remove();
+                                    })
+                                })
+                                //查看图片
+                                jQuery('.magnifier').touchTouch();
+                            }
+                        }
+                        if (data.ProductCategoryId) {
+                            $("#ddlCategoryTree").ComboBoxSetValue(data.ProductCategoryId);
+                        }
+                        if (data.ProductType) {
+                            $("#ddlType").ComboBoxSetValue(data.ProductType);
+                        }
+                        if (data.ShipTempId) {
+                            $("#ddlShipTemp").ComboBoxSetValue(data.ShipTempId);
+                        }
+                        if (data.ServiceRuleId) {
+                            $("#ddlServiceRule").ComboBoxSetValue(data.ServiceRuleId);
+                        }
+                        if (data.RuleList) {
+                            if (data.RuleList.length > 0) {
+                                AddSubject(data.RuleList);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        //加载导向
+        $('#wizard').wizard().on('change', function (e, data) {
+            var $finish = $("#btn_finish");
+            var $next = $("#btn_next");
+            if (data.direction == "next") {
+                if (data.step == 1) {
+
+                    if (!$('#form1').Validform()) {
+                        return false;
+                    }
+                }
+                if (data.step == 2) {
+                    if (!$('#form1').Validform()) {
+                        return false;
+                    }
+                    var subject = [];
+                    $("#subjects li").each(function () {
+                        var $this = $(this);
+                        var id = $this.attr("id");
+                        var price = $("#txtprice_" + id).val();
+                        var rulename = $("#txtrule_" + id).val();
+                        subject.push({
+                            "RuleId": id,
+                            "ProductId": "",
+                            "RuleName": rulename,
+                            "Price": price,
+                        });
+
+                    })
+                    if (subject.length == 0) {
+                        dialogMsg("请设置产品规格信息", 0);
+                        return false;
+                    }
+                   
+                }
+                if (data.step == 3) {
+                    $finish.removeAttr('disabled');
+                    $next.attr('disabled', 'disabled');
+                }
+            } else {
+                $finish.attr('disabled', 'disabled');
+                $next.removeAttr('disabled');
+            }
+        });
+
+    }
+    //保存表单
+    function AcceptClick() {
+        if (!$('#form1').Validform()) {
+            return false;
+        }
+        //注意 提交json 字符串，在后台反序列化对象
+        var postData = $("#form1").GetWebControls(keyValue);
+        postData["FaceImag"] = $("#HidFaceImage").val();
+        postData["ProductDescription"] = encodeHtml(eidtor.getContent());
+        postData["ProductCategoryId"] = $("#ddlCategoryTree").attr('data-value');
+        postData["ProductType"] = $("#ddlType").attr('data-value');
+        postData["ShipTempId"] = $("#ddlShipTemp").attr('data-value');
+        postData["ServiceRuleId"] = $("#ddlServiceRule").attr('data-value');
+        //图片集合
+        var imageslist = [];
+        $("#imgs li:gt(0)").each(function () {
+            var $this = $(this);
+            var path = $this.find("img").attr("filename");
+            imageslist.push({
+                "PicName": path
+            });
+
+        })
+        postData["AttachmentPicList"] = imageslist;
+
+        //规则
+        var subject = [];
+        $("#subjects li").each(function () {
+            var $this = $(this);
+            var id = $this.attr("id");
+            var price = $("#txtprice_" + id).val();
+            var rulename = $("#txtrule_" + id).val();
+            subject.push({
+                "RuleId": id,
+                "ProductId": "",
+                "RuleName": rulename,
+                "Price": price,
+            });
+
+        })
+        postData["RuleList"] = subject;
+        $.SaveForm({
+            url: "/TradeManage/Product/SaveForm?keyValue=" + keyValue,
+            param: { json: JSON.stringify(postData) },
+            loading: "正在保存数据...",
+            success: function () {
+                $.currentIframe().$("#gridTable").trigger("reloadGrid");
+            }
+        })
+    }
+
+    //初始化页面
+    function InitialPage() {
+
+        //resize重设(表格、树形)宽高
+        $(window).resize(function (e) {
+            //window.setTimeout(function () {
+            //    //$('.profile-nav').height($(window).height() - 20);
+            //    //$('.profile-content').height($(window).height() - 20);
+            //}, 200);
+            //e.stopPropagation();
+        });
+
+        uploadFacePic();
+
+    }
+
+    // HTML编码
+    function encodeHtml(value) {
+        if (!value || value.length == 0) {
+            return "";
+        }
+
+        return value.replace(/&/g, "&amp;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/</g, "&lt;")
+                    .replace(/'/, "&quot;");
+    }
+
+
+    /// <summary>
+    /// HTML解码
+    /// </summary>
+    function decodeHtml(value) {
+        if (!value || value.length == 0) {
+            return "";
+        };
+        return value.replace(/&lt;/g, "<")
+                    .replace(/&gt;/g, ">")
+                    .replace(/&amp;/g, "&")
+                    .replace(/&quot;/g, "'");
+    }
+
+    function uploadFacePic() {
+        $("#uploadPreview").unbind("click").bind("click", function () {
+            $('#uploadFaceImage').trigger("click");
+        })
+        //上传图标
+        $('#uploadFaceImage').change(function () {
+            var f = document.getElementById('uploadFaceImage').files[0];
+            var src = window.URL.createObjectURL(f);
+            document.getElementById('uploadPreview').src = src;
+            var formData = new FormData();
+            //为FormData对象添加数据
+            $.each($('#uploadFaceImage')[0].files, function (i, file) {
+                formData.append('file', file);
+            });
+
+            //上传应用图标
+            $.ajax({
+                url: "@System.Configuration.ConfigurationManager.AppSettings["ImageHost"]/Upload/UploadCutProductLogo",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data && data.IsSuccess) {
+                        var filename = data.ResultData["filename"];
+                        var path = data.ResultData["path"];
+                        $("#HidFaceImage").val(filename);
+                    }
+                    else {
+                        alert(data.Message);
+                    }
+                }
+            });
+        });
+    }
+    //上传产品图片
+    function uploadPic() {
+        $("#uploadFile").click();
+        //上传图标
+        $('#uploadFile').unbind("change").bind("change", function () {
+            var formData = new FormData();
+            //为FormData对象添加数据
+            $.each($('#uploadFile')[0].files, function (i, file) {
+                formData.append('file', file);
+            });
+
+            //上传应用图标
+            $.ajax({
+                url: "@System.Configuration.ConfigurationManager.AppSettings["ImageHost"]/Upload/Product",
+                type: 'POST',
+                data: formData,
+                async: false,
+                cache: false,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data && data.IsSuccess) {
+                        var filename = data.ResultData["filename"];
+                        var path = data.ResultData["path"];
+                        //_ImageList.push(path);
+                        //显示图片
+                        var html = "";
+                        var path = "@System.Configuration.ConfigurationManager.AppSettings["ImageHost"]" + path;
+                        html += '<li style=" background:#ccc;position:relative;"><a class="magnifier" href="' + path + '">';
+                        html += '<img src="' + path + '" filename="' + filename + '"/>';
+                        html += '</a>';
+                        html += '<i class="" style="position: absolute;right: -2px;;top: 0px;background:url(/content/images/close11.png);width:32px;height:32px;">&nbsp;&nbsp;&nbsp;&nbsp;</i>';
+                        html += '</li>';
+
+
+                        $("#imgs").append(html);
+                        //绑定删除事件
+                        $("#imgs li").each(function () {
+                            $(this).find("i").bind("click", function () {
+                                //var src = $(this).parent().find("img").attr("src");
+                                //删除数组
+                                //_ImageList.splice($.inArray(src, _ImageList), 1);
+                                //删除图片
+                                $(this).parent().remove();
+                            })
+                        })
+                        //查看图片
+                        jQuery('.magnifier').touchTouch();
+                    }
+                    else {
+
+                    }
+                }
+            });
+        });
+    }
+
+
+    //添加科目
+    function AddSubject(data) {
+        var html = "";
+        if (data != null && data.length != 0) {
+            //定义变量
+            var len = data.length;
+            var i = 0;
+            //创建方法
+            var createsubjectItem = function () {
+                var html = "";
+                var item = data[i];
+                var id = item.RuleId;
+                html += '<li id=' + id + ' style="border-bottom:1px solid #ccc;padding:30px;position:relative;">';
+                html += '<table class="form">';
+                html += ' <tr>';
+                html += '     <td class="formTitle">规格名称</td>';
+                html += '       <td class="formValue">';
+                html += '          <input id="txtrule_' + id + '" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" />';
+                html += '      </td>';
+                html += '   </tr>';
+                html += ' <tr>';
+                html += '     <td class="formTitle">价格</td>';
+                html += '       <td class="formValue">';
+                html += '          <input id="txtprice_' + id + '" type="text" class="form-control input-profile" isvalid="yes" checkexpession="Double" />';
+                html += '      </td>';
+                html += '   </tr>';
+                html += '   </table>';
+                html += '<i class="" style="position: absolute;right: -2px;;top: 0px;background:url(/content/images/close.png);width:16px;height:16px;">&nbsp;&nbsp;&nbsp;&nbsp;</i>';
+                html += '   </li>';
+                $("#subjects").append(html);
+                setTimeout(function () {
+                    if (item) {
+                        $("#txtrule_" + id).val(item.RuleName);
+                        $("#txtprice_" + id).val(item.Price);
+
+                    }
+                }, 1);
+                i++;//更新循环变量
+                if (i < len) {
+                    createsubjectItem();
+                }
+            }
+            //第一次调用
+            createsubjectItem();
+
+            //绑定删除事件
+            $("#subjects li").each(function () {
+                $(this).find("i").bind("click", function () {
+                    var $this = $(this).parent();
+                    var id = $this.attr("id");
+                    $.RemoveForm({
+                        url: "/TradeManage/ProductRule/RemoveForm",
+                        param: { keyValue: id },
+                        success: function (data) {
+                            $this.remove();
+                        }
+                    })
+
+
+                })
+            })
+        } else {
+            //add
+            var id = newGuid();
+            html += '<li id=' + id + ' style="border-bottom:1px solid #ccc;padding:30px;position:relative;">';
+            html += '<table class="form">';          
+            html += ' <tr>';
+            html += '     <td class="formTitle">规格名称</td>';
+            html += '       <td class="formValue">';
+            html += '          <input id="txtrule_' + id + '" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" />';
+            html += '      </td>';
+            html += '   </tr>';
+            html += ' <tr>';
+            html += '     <td class="formTitle">价格</td>';
+            html += '       <td class="formValue">';
+            html += '          <input id="txtprice_' + id + '" type="text" class="form-control input-profile" isvalid="yes" checkexpession="Double" />';
+            html += '      </td>';
+            html += '   </tr>';
+            html += '   </table>';
+            html += '<i class="" style="position: absolute;right: -2px;;top: 0px;background:url(/content/images/close.png);width:16px;height:16px;">&nbsp;&nbsp;&nbsp;&nbsp;</i>';
+            html += '   </li>';
+            $("#subjects").append(html);
+            //绑定删除事件
+            $("#subjects li").each(function () {
+                $(this).find("i").bind("click", function () {
+                    $(this).parent().remove();
+                })
+            })
+        }
+    }
+</script>
+<style>
+    #imgs li {
+        float: left;
+        margin-right: 5px;
+    }
+
+    #tags li {
+        float: left;
+        margin-right: 5px;
+    }
+
+    #imgs li img {
+        width: 100px;
+        height: 100px;
+    }
+</style>
+
+<div class="widget-body">
+    <div id="wizard" class="wizard" data-target="#wizard-steps" style="border-left: none; border-top: none; border-right: none;">
+        <ul class="steps"> <li data-target="#step-1" class="active"> <span class="step"> 1</span> 基本信息<span class="chevron"> </span> </li> <li data-target="#step-2"> <span class="step"> 2</span> 产品规格<span class="chevron"> </span> </li><li data-target="#step-3"> <span class="step"> 3</span> 产品图片<span class="chevron"> </span> </li> <li data-target="#step-4"> <span class="step"> 4</span> 产品信息<span class="chevron"> </span> </li> </ul>
+    </div>
+
+    <div class="step-content" id="wizard-steps" style="border-left: none; border-bottom: none; border-right: none; margin: 10px; min-height: 650px">
+        <div class="step-pane active" id="step-1">
+            <div id="">
+                <table class="form">
+                    <tr>
+                        <td class="formTitle"> 产品编号<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductNO" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" value="@ViewBag.ProCode" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle"> 产品名称<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductName" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" maxlength="100"/>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="formTitle"> 产品属性<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <div id="ddlType" type="select" class="ui-select" isvalid="yes" checkexpession="NotNull">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="formTitle"> 运费模板<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <div id="ddlShipTemp" type="select" class="ui-select" isvalid="yes" checkexpession="NotNull">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle"> 服务费模板</td>
+                        <td class="formValue">
+                            <div id="ddlServiceRule" type="select" class="ui-select">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="formTitle"> 产品分类<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <div id="ddlCategoryTree" type="select" class="ui-select" isvalid="yes" checkexpession="NotNull">
+                            </div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="formTitle"> 单位<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductUnit" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" />
+                        </td>
+                    </tr>
+                    @*<tr>
+                        <td class="formTitle"> 价格<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductPrice" type="text" class="form-control input-profile" isvalid="yes" checkexpession="Double" />
+                        </td>
+                    </tr>*@
+                    @*<tr>
+                        <td class="formTitle"> 活动价格<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductCostPrice" type="text" class="form-control input-profile" isvalid="yes" checkexpession="Double" />
+                        </td>
+                    </tr>*@
+                    @*<tr>
+                        <td class="formTitle"> 库存<font face="宋体">*</font></td>
+                        <td class="formValue">
+                            <input id="ProductStock" type="text" class="form-control input-profile" isvalid="yes" checkexpession="NotNull" />
+                        </td>
+                    </tr>*@                   
+                    <tr>
+                        <td class="formTitle"> 产品封面</td>
+                        <td>
+                            <input type="hidden" id="HidFaceImage" />
+                            <div style="text-align: center;">
+                                <div class="" style="width: 100px; height: 100px;">
+                                    <img id="uploadPreview" style="width: 100px; height: 100px; border-radius: 100px; border:0px" src="~/Content/images/add.png" />
+                                    <input type="file" name="uploadFaceImage" id="uploadFaceImage" style="display:none">
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+
+                </table>
+            </div>
+        </div>
+        <div class="step-pane" id="step-2">
+            <div id="" style="margin: 10px; min-height: 450px">
+                <ul id="subjects"></ul>
+                <div style="text-align:center;margin-top:10px;">
+                    <a class="btn btn-default btn-blue1" id="btn_addsubject"> 添加产品规格</a>
+                </div>
+            </div>
+        </div>
+        <div class="step-pane" id="step-3">
+            <table class="form">
+                <tr>
+                    <td class="formTitle">产品图片</td>
+                    <td class="formValue">
+                        <input type="file" name="uploadFile" id="uploadFile" style="display:none;">
+                        <ul id="imgs">
+                            <li><img src="/content/images/add.png" onclick="uploadPic()" /></li>
+                        </ul>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="step-pane" id="step-4">
+            <table class="form">
+                <tr>
+                    <td class="formTitle">描述</td>
+                    <td class="formValue">
+                        <div id="" style="margin: 10px;">
+                            <textarea id="ProductDescription" class="clear" rows="6" style="width:100%"></textarea>
+                            <div style="padding-top:10px;color:#999;@(string.IsNullOrWhiteSpace("") ? "" : "display:none;")" class="cor-red" id="destips">描述不能为空。</div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+        <div class="clearfix"></div>
+    </div>
+</div>
+<div class="" id="wizard-actions" style="text-align:right;margin-bottom:0px;margin-right:10px">
+    <a id="btn_last" disabled class="btn btn-default btn-prev"> 上一步</a>
+    <a id="btn_next" class="btn btn-default btn-next"> 下一步</a>
+    <a id="btn_finish" disabled class="btn btn-success"> 完成</a>
+</div>

@@ -1,0 +1,293 @@
+﻿@{
+    ViewBag.Title = "产品列表";
+    Layout = "~/Views/Shared/_LayoutList.cshtml";
+}
+<script>
+    $(function () {
+        InitialPage();
+        GetGrid();
+
+        $("#ddlCategoryTree").ComboBoxTree({
+            url: "/TradeManage/Category/GetCategoryTreeJson",
+            description: "==请选择分类==",
+            height: "250px",
+            click: function (item) {
+            }
+        });
+        $("#ddlType").ComboBox({
+            url: "/SystemManage/DataItemDetail/GetDataItemListJson",
+            param: { EnCode: "cpsx" },
+            id: "ItemDetailId",
+            text: "ItemName",
+            description: "==请选择属性==",
+            height: "200px"
+        });
+
+    });
+    //初始化页面
+    function InitialPage() {
+        //resize重设(表格、树形)宽高
+        $(window).resize(function (e) {
+            window.setTimeout(function () {
+                $('#gridTable').setGridWidth(($('.gridPanel').width()));
+                $("#gridTable").setGridHeight($(window).height() - 160);
+            }, 200);
+            e.stopPropagation();
+        });
+    }
+    //加载表格
+    function GetGrid() {
+        var selectedRowIndex = 0;
+        var $gridTable = $("#gridTable");
+        var queryJson = {};
+        $gridTable.jqGrid({
+            url: "/TradeManage/Product/GetPageListJson",
+            datatype: "json",
+            postData: { queryJson: JSON.stringify(queryJson) },
+            height: $(window).height() - 160,
+            autowidth: true,
+            colModel: [
+                { label: '主键', name: 'ProductId', hidden: true },
+                {
+                    label: "产品封面", name: "FaceImag", index: "FaceImag", width: 150, align: "center",
+                    formatter: function (cellvalue, options, rowObject) {
+                        var path = '@(QSDMS.Util.Config.GetValue("ImageHost") == "" ? string.Format("http://{0}{1}", Request.Url.Host, Request.Url.Port == 80 ? "" : ":" + Request.Url.Port) : QSDMS.Util.Config.GetValue("ImageHost"))';
+                        if (cellvalue) {
+
+                            return "<img src='" + path + "/file/ProductFaceLogo/" + cellvalue + "' style='width:30px;height:30px;'/>";
+                        } else {
+                            return "<img src='" + path + "/content/images/nopic.jpg' style='width:30px;height:30px;'/>";
+                        }
+                    }
+                },
+                { label: '产品编号', name: 'ProductNO', ItemNameindex: 'ProductNO', width: 100, align: 'center', sortable: true },
+                { label: '产品名称', name: 'ProductName', index: 'ProductName', width: 150, align: 'center', sortable: true },
+                { label: '产品属性', name: 'ProductTypeName', index: 'ProductTypeName', width: 150, align: 'center', sortable: true },
+                { label: '所属分类', name: 'CateName', index: 'CateName', width: 150, align: 'center', sortable: true },
+                //{ label: '价格', name: 'ProductPrice', index: 'ProductPrice', width: 100, align: 'center', sortable: true },
+                //{ label: '活动价格', name: 'ProductCostPrice', index: 'ProductCostPrice', width: 100, align: 'center', sortable: true },
+                { label: '单位', name: 'ProductUnit', index: 'ProductUnit', width: 100, align: 'center', sortable: true },
+                { label: '规格', name: 'RuleExtName', index: 'RuleExtName', width: 100, align: 'center', sortable: true },
+                //{ label: '库存', name: 'ProductStock', index: 'ProductStock', width: 100, align: 'center', sortable: true },
+                { label: '上传时间', name: 'CreateTime', index: 'CreateTime', width: 200, align: 'center', sortable: true },
+                @*{
+                    label: "产品状态", name: "ProductStatus", index: "ProductStatus", width: 80, align: "center", sortable: true,
+                    formatter: function (cellvalue) {
+                        switch (cellvalue.toString()) {
+                            case "@((int)Trade.Model.Enums.ProductStatus.删除)":
+                                return "<span class=\"label label-danger\">@Trade.Model.Enums.ProductStatus.删除</span>";
+                                break;
+                            case "@((int)Trade.Model.Enums.ProductStatus.上架)":
+                                return "<span class=\"label label-success\">@Trade.Model.Enums.ProductStatus.上架</span>";
+                                break;
+                            case "@((int)Trade.Model.Enums.ProductStatus.下架)":
+                                return "<span class=\"label label-danger\">@Trade.Model.Enums.ProductStatus.下架</span>";
+                                break;
+                        }
+                    }
+                },
+                {
+                    label: "审核状态", name: "AuditStatus", index: "AuditStatus", width: 80, align: "center", sortable: true,
+                    formatter: function (cellvalue) {
+                        return cellvalue == "@((int)Trade.Model.Enums.AuditStatus.未审核)" ? "<span class=\"label label-danger\">@Trade.Model.Enums.AuditStatus.未审核</span>" : "<span class=\"label label-success\">@Trade.Model.Enums.AuditStatus.已审核</span>";
+                    }
+                }*@
+            ],
+            multiselect: true,
+            viewrecords: true,
+            rowNum: 30,
+            rowList: [30, 50, 100, 500, 1000],
+            pager: "#gridPager",
+            sortname: 'CreateTime',
+            sortorder: 'desc',
+            rownumbers: true,
+            shrinkToFit: false,
+            gridview: true
+
+        });
+        //查询条件设置
+        $("#queryCondition .dropdown-menu li").click(function () {
+            var text = $(this).find('a').html();
+            var value = $(this).find('a').attr('data-value');
+            $("#queryCondition .dropdown-text").html(text).attr('data-value', value)
+        });
+        //查询事件
+        $("#btn_Search").click(function () {
+            var queryJson = {};
+            queryJson["keyword"] = $("#txt_Keyword").val();
+            queryJson["condition"] = $("#queryCondition").find('.dropdown-text').attr('data-value');
+            queryJson["type"] = $("#ddlType").attr('data-value');
+            queryJson["cateid"] = $("#ddlCategoryTree").attr('data-value');
+            $gridTable.jqGrid('setGridParam', {
+                postData: { queryJson: JSON.stringify(queryJson) }
+            }).trigger('reloadGrid');
+        });
+        //查询回车
+        $('#txt_Keyword').bind('keypress', function (event) {
+            if (event.keyCode == "13") {
+                $('#btn_Search').trigger("click");
+            }
+        });
+    }
+
+    function btn_add() {
+        dialogOpen({
+            id: "Form",
+            title: '创建',
+            url: '/TradeManage/Product/Form',
+            width: "1100px",
+            height: "850px",
+            callBack: function (iframeId) {
+                //top.frames[iframeId].AcceptClick();
+            },
+            btn: null
+        });
+    }
+
+    //修改
+    function btn_edit() {
+        var keyValue = $("#gridTable").jqGridRowValue("ProductId");
+        if (checkedRow(keyValue)) {
+            dialogOpen({
+                id: "Form",
+                title: '编辑',
+                url: '/TradeManage/Product/Form?keyValue=' + keyValue,
+                width: "1100px",
+                height: "850px",
+                callBack: function (iframeId) {
+                    top.frames[iframeId].AcceptClick();
+                },
+                btn: null
+            });
+        }
+    }
+    //删除
+    function btn_delete() {
+        var keyValue = $("#gridTable").jqGridRowValue("ProductId");
+        if (checkedArray(keyValue)) {
+            $.RemoveForm({
+                url: "/TradeManage/Product/RemoveForm",
+                param: { keyValue: keyValue },
+                success: function (data) {
+                    $("#gridTable").trigger("reloadGrid");
+                }
+            })
+        } else {
+            dialogMsg('请选择需要删除的数据！', 0);
+        }
+    }
+    //审核处理
+    function btn_audit() {
+        var keyValue = $("#gridTable").jqGridRowValue("ProductId");
+        if (checkedArray(keyValue)) {
+            $.ConfirmAjax({
+                msg: "注：您确定要【审核】吗？",
+                url: "/TradeManage/Product/Audit",
+                param: { keyValue: keyValue },
+                success: function (result) {
+                    if (result.IsSuccess) {
+                        $("#gridTable").trigger("reloadGrid");
+                    }
+                }
+            })
+        }
+    }
+    function btn_online() {
+        var keyValue = $("#gridTable").jqGridRowValue("ProductId");
+        if (checkedArray(keyValue)) {
+            $.ConfirmAjax({
+                msg: "注：您确定要【上架】吗？",
+                url: "/TradeManage/Product/Online",
+                param: { keyValue: keyValue },
+                success: function (result) {
+                    if (result.IsSuccess) {
+                        $("#gridTable").trigger("reloadGrid");
+                    }
+                }
+            })
+        }
+    }
+    function btn_unonline() {
+        var keyValue = $("#gridTable").jqGridRowValue("ProductId");
+        if (checkedArray(keyValue)) {
+            $.ConfirmAjax({
+                msg: "注：您确定要【下架】吗？",
+                url: "/TradeManage/Product/UnOnline",
+                param: { keyValue: keyValue },
+                success: function (result) {
+                    if (result.IsSuccess) {
+                        $("#gridTable").trigger("reloadGrid");
+                    }
+                }
+            })
+        }
+    }
+    //导出
+    function btn_export() {
+        var queryJson = {};
+        queryJson["keyword"] = $("#txt_Keyword").val();
+        queryJson["condition"] = $("#queryCondition").find('.dropdown-text').attr('data-value');
+        queryJson["type"] = $("#ddlType").attr('data-value');
+        queryJson["cateid"] = $("#ddlCategoryTree").attr('data-value');
+        var actionUrl = "/TradeManage/Product/ExportExcel";
+        var iscompletedMsg = "iscompletedMsg";
+        var para = "queryJson|" + JSON.stringify(queryJson);
+        doProgressExport(para, actionUrl, iscompletedMsg, "uploadFlag");
+    }
+</script>
+<div class="toolbarPanel">
+    <div class="row">
+        <div class="col-md-1">
+            <div id="queryCondition" class="btn-group">
+                <a class="btn btn-default dropdown-text" data-toggle="dropdown">选择条件</a>
+                <a class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li><a data-value="ProductNO">产品编号</a></li>
+                    <li><a data-value="ProductName">产品名称</a></li>
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-md-2">
+            <input id="txt_Keyword" type="text" class="form-control" placeholder="请输入要查询关键字" style="" />
+        </div>
+        <div class="col-md-2">
+            <div id="ddlCategoryTree" type="select" class="ui-select">
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div id="ddlType" type="select" class="ui-select">
+            </div>
+        </div>
+        <div class="col-md-1">
+            <a id="btn_Search" class="btn btn-primary"><i class="fa fa-search"></i>&nbsp;查询</a>
+        </div>
+
+
+        <div class="toolbar">
+            <div class="btn-group animated fadeInDownBig">
+                <a id="btn-replace" class="btn btn-default" onclick="reload();"><i class="fa fa-refresh"></i>&nbsp;刷新</a>
+                <a id="btn-add" class="btn btn-default" onclick="btn_add()"><i class="fa fa-plus"></i>&nbsp;新建</a>
+                <a id="btn-edit" class="btn btn-default" onclick="btn_edit()"><i class="fa fa-pencil-square-o"></i>&nbsp;编辑</a>
+                <a id="btn-delete" class="btn btn-default" onclick="btn_delete()"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                <a id="btn-more" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <i class="fa fa-reorder"></i>&nbsp;更多<span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu pull-right">
+                    @*<li id="btn-disabled"><a onclick="btn_audit()"><i></i>&nbsp;审核</a></li>
+                    <li id="btn-disabled"><a onclick="btn_online()"><i></i>&nbsp;上架</a></li>
+                    <li id="btn-enabled"><a onclick="btn_unonline()"><i></i>&nbsp;下架</a></li>*@
+                    <li id="btn-export" class=""><a onclick="btn_export()"><i class="fa fa-sign-out"></i>&nbsp;导出</a></li>
+                </ul>
+                <span style="line-height: 26px" class='' id="uploadFlag">
+                    <span id="iscompletedMsg"
+                          style="display: none;"><font color='red'>正在处理，请稍候...</font></span>
+                </span>
+            </div>
+        </div>
+    </div>
+
+</div><div class="gridPanel">
+    <table id="gridTable"></table>
+    <div id="gridPager" style="padding: 10px; height: 40px; background: #F3F3F4;"></div>
+</div>

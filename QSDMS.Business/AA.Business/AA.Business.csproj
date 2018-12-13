@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{150A7782-4FB0-427B-9597-4B5CC75DE9CE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>AA.Business</RootNamespace>
+    <AssemblyName>AA.Business</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="iFramework.Business, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\iframework\iFramework.Business.dll</HintPath>
+    </Reference>
+    <Reference Include="iFramework.Factory, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\iframework\iFramework.Factory.dll</HintPath>
+    </Reference>
+    <Reference Include="iFramework.Framework, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\lib\iframework\iFramework.Framework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestBLL.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\QSDMS.DataAccess\AA.Data.IServices\AA.Data.IServices.csproj">
+      <Project>{622d08d7-1294-4a35-9723-82c189ffa38c}</Project>
+      <Name>AA.Data.IServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Business.Base\QSDMS.Business.Base.csproj">
+      <Project>{e36a59b9-7a03-45ec-8bf4-9fcdbadf4326}</Project>
+      <Name>QSDMS.Business.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Business.Cache\QSDMS.Business.Cache.csproj">
+      <Project>{bf85365e-71d4-4a2f-823c-3516a6d08f7c}</Project>
+      <Name>QSDMS.Business.Cache</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Business\QSDMS.Business.csproj">
+      <Project>{f784fe53-4599-4ae6-9735-bf367829f27a}</Project>
+      <Name>QSDMS.Business</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Data.Base\QSDMS.Data.Base.csproj">
+      <Project>{bacfcf65-fd95-43b4-b316-9a2fb5b6673a}</Project>
+      <Name>QSDMS.Data.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Model.Base\QSDMS.Model.Base.csproj">
+      <Project>{03cf059a-9ccc-4d7b-a318-fa79d3463a3a}</Project>
+      <Name>QSDMS.Model.Base</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Model\QSDMS.Model.csproj">
+      <Project>{525ec8f0-d6a8-4680-8dbf-94244de469f2}</Project>
+      <Name>QSDMS.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.iFrameWork\QSDMS.Util\QSDMS.Util.csproj">
+      <Project>{2e7b524e-e766-480f-9126-b54c0c10a0a4}</Project>
+      <Name>QSDMS.Util</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\QSDMS.Model\AA.Model\AA.Model.csproj">
+      <Project>{d897d896-3dbe-4d6c-a964-66b2a309686e}</Project>
+      <Name>AA.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
