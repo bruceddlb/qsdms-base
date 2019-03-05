@@ -42,5 +42,10 @@ namespace iFramework.Factory
                 return m_provider;
             }
         }
+
+        /// <summary>
+        /// 数据库连接
+        /// </summary>
+        public string ConnectionString { get; set; }
     }
 }

@@ -1,1 +1,1381 @@
-﻿$(function () { $(".collapse-link").click(function () { var a = $(this).closest("div.ibox"), b = $(this).find("i"); a.find("div.ibox-content").slideToggle(200); b.toggleClass("fa-chevron-up").toggleClass("fa-chevron-down"); a.toggleClass("").toggleClass("border-bottom"); setTimeout(function () { a.resize(); a.find("[id^\x3dmap-]").resize() }, 50) }); $(".close-link").click(function () { $(this).closest("div.ibox").parent().remove() }); window.onload = function () { Loading(!0) }; $(".ui-filter-text").click(function () { $(this).next(".ui-filter-list").is(":hidden") ? ($(".ui-filter-list").css({ display: "block" }), $(this).addClass("active")) : ($(this).css("border-bottom-color", "#ccc"), $(".ui-filter-list").css({ display: "none" }), $(this).removeClass("active")) }); $(".profile-nav li").click(function () { $(".profile-nav li").removeClass("active"); $(".profile-nav li").removeClass("hover"); $(this).addClass("active") }).hover(function () { $(this).hasClass("active") || $(this).addClass("hover") }, function () { $(this).removeClass("hover") }) }); Loading = function (a, b) { var c = top.$("#loading_background"); a ? c.show() : (c.hide(), top.$(".ajax-loader").remove()); b ? c.find("p").text(b) : c.find("p").text("\u6b63\u5728\u52a0\u8f7d\u6570\u636e\u2026") }; tabiframeId = function () { top.$(".mainContent").find(".on") || top.$(".mainContent").find("iframe[style\x3d'display: inline;']"); return void 0 == top.$(".mainContent").find(".on").attr("id") ? top.$(".mainContent").find("iframe[style\x3d'display: inline;']").attr("id") : top.$(".mainContent").find(".on").attr("id") }; $.fn.ComboBox = function (a) { function b(b, e, h) { if (0 < b.length) { var f = $("\x3cul\x3e\x3c/ul\x3e"); a.description && f.append('\x3cli data-value\x3d""\x3e' + a.description + "\x3c/li\x3e"); $.each(b, function (c) { c = b[c]; var d = c[a.title]; void 0 == d && (d = ""); void 0 != e ? -1 != c[h.text].indexOf(e) && f.append('\x3cli data-value\x3d"' + c[a.id] + '" title\x3d"' + d + '"\x3e' + c[a.text] + "\x3c/li\x3e") : f.append('\x3cli data-value\x3d"' + c[a.id] + '" title\x3d"' + d + '"\x3e' + c[a.text] + "\x3c/li\x3e") }); d.find(".ui-select-option-content").html(f); d.find("li").css("padding", "0 5px"); d.find("li").click(function (a) { var b = $(this).text(), e = $(this).attr("data-value"); c.attr("data-value", e).attr("data-text", b); c.find(".ui-select-text").html(b).css("color", "#000"); d.slideUp(150); c.trigger("change"); a.stopPropagation() }).hover(function (a) { $(this).hasClass("liactive") || $(this).toggleClass("on"); a.stopPropagation() }) } } var c = $(this); if (!c.attr("id")) return !1; if (a && 0 == c.find(".ui-select-text").length) { var e; e = "" + ("\x3cdiv class\x3d\"ui-select-text\" style\x3d'color:#999;'\x3e" + a.description + "\x3c/div\x3e"); e = e + '\x3cdiv class\x3d"ui-select-option"\x3e' + ('\x3cdiv class\x3d"ui-select-option-content" style\x3d"max-height: ' + a.height + '"\x3e' + c.html() + "\x3c/div\x3e"); a.allowSearch && (e += '\x3cdiv class\x3d"ui-select-option-search"\x3e\x3cinput type\x3d"text" class\x3d"form-control" placeholder\x3d"\u641c\u7d22\u5173\u952e\u5b57" /\x3e\x3cspan class\x3d"input-query" title\x3d"Search"\x3e\x3ci class\x3d"fa fa-search"\x3e\x3c/i\x3e\x3c/span\x3e\x3c/div\x3e'); e += "\x3c/div\x3e"; c.html(""); c.append(e) } e = $($("\x3cp\x3e").append(c.find(".ui-select-option").clone()).html()); e.attr("id", c.attr("id") + "-option"); c.find(".ui-select-option").remove(); 0 < e.length && $("body").find("#" + c.attr("id") + "-option").remove(); $("body").prepend(e); var d = $("#" + c.attr("id") + "-option"); void 0 != a.url ? (d.find(".ui-select-option-content").html(""), $.ajax({ url: a.url, data: a.param, type: "GET", dataType: "json", async: !1, success: function (c) { a.data = c; b(c) }, error: function (a, b, c) { dialogMsg(c, -1) } })) : void 0 != a.data ? b(a.data) : (d.find("li").css("padding", "0 5px"), d.find("li").click(function (a) { var b = $(this).text(), e = $(this).attr("data-value"); c.attr("data-value", e).attr("data-text", b); c.find(".ui-select-text").html(b).css("color", "#000"); d.slideUp(150); c.trigger("change"); a.stopPropagation() }).hover(function (a) { $(this).hasClass("liactive") || $(this).toggleClass("on"); a.stopPropagation() })); a.allowSearch && (d.find(".ui-select-option-search").find("input").bind("keypress", function (a) { "13" == event.keyCode && (a = $(this).val(), b($(this)[0].options.data, a, $(this)[0].options)) }).focus(function () { $(this).select() })[0].options = a); c.unbind("click"); c.bind("click", function (b) { if ("readonly" == c.attr("readonly") || "disabled" == c.attr("disabled")) return !1; $(this).addClass("ui-select-focus"); if (d.is(":hidden")) { c.find(".ui-select-option").hide(); $(".ui-select-option").hide(); var e = c.offset().left, h = c.offset().top + 29, f = c.width(); a.width && (f = a.width); d.height() + h < $(window).height() ? d.slideDown(150).css({ top: h, left: e, width: f }) : (h = h - d.height() - 32, d.show().css({ top: h, left: e, width: f }), d.attr("data-show", !0)); d.css("border-top", "1px solid #ccc"); d.find("li").removeClass("liactive"); d.find("[data-value\x3d" + c.attr("data-value") + "]").addClass("liactive"); d.find(".ui-select-option-search").find("input").select() } else d.attr("data-show") ? d.hide() : d.slideUp(150); b.stopPropagation() }); $(document).click(function (a) { a = a ? a : window.event; $(a.srcElement || a.target).hasClass("form-control") || (d.attr("data-show") ? d.hide() : d.slideUp(150), c.removeClass("ui-select-focus"), a.stopPropagation()) }); return c }; $.fn.ComboBoxSetValue = function (a) { if (!$.isNullOrEmpty(a)) { var b = $(this), c = $("#" + b.attr("id") + "-option"); b.attr("data-value", a); var e = c.find("ul").find("[data-value\x3d" + a + "]").html(); e && (b.attr("data-text", e), b.find(".ui-select-text").html(e).css("color", "#000"), c.find("ul").find("[data-value\x3d" + a + "]").addClass("liactive")); return b } }; $.fn.ComboBoxTree = function (a) { function b(b) { f.treeview({ onnodeclick: function (b) { c.attr("data-value", b.id).attr("data-text", b.text); c.find(".ui-select-text").html(b.text).css("color", "#000"); c.trigger("change"); a.click && a.click(b) }, height: a.height, url: b, param: a.param, method: a.method, description: a.description }) } var c = $(this); if (!c.attr("id")) return !1; if (0 == c.find(".ui-select-text").length) { var e; e = "" + ("\x3cdiv class\x3d\"ui-select-text\"  style\x3d'color:#999;'\x3e" + a.description + "\x3c/div\x3e"); e = e + '\x3cdiv class\x3d"ui-select-option"\x3e' + ('\x3cdiv class\x3d"ui-select-option-content" style\x3d"max-height: ' + a.height + '"\x3e\x3c/div\x3e'); a.allowSearch && (e += '\x3cdiv class\x3d"ui-select-option-search"\x3e\x3cinput type\x3d"text" class\x3d"form-control" placeholder\x3d"\u641c\u7d22\u5173\u952e\u5b57" /\x3e\x3cspan class\x3d"input-query" title\x3d"Search"\x3e\x3ci class\x3d"fa fa-search" title\x3d"\u6309\u56de\u8f66\u67e5\u8be2"\x3e\x3c/i\x3e\x3c/span\x3e\x3c/div\x3e'); c.append(e + "\x3c/div\x3e") } e = $($("\x3cp\x3e").append(c.find(".ui-select-option").clone()).html()); e.attr("id", c.attr("id") + "-option"); c.find(".ui-select-option").remove(); a.appendTo ? $(a.appendTo).prepend(e) : $("body").prepend(e); var d = $("#" + c.attr("id") + "-option"), f = $("#" + c.attr("id") + "-option").find(".ui-select-option-content"); b(a.url); a.allowSearch && (d.find(".ui-select-option-search").find("input").attr("data-url", a.url), d.find(".ui-select-option-search").find("input").bind("keypress", function (a) { "13" == event.keyCode && (a = $(this).val(), a = changeUrlParam(d.find(".ui-select-option-search").find("input").attr("data-url"), "keyword", escape(a)), b(a)) }).focus(function () { $(this).select() })); a.icon && (d.find("i").remove(), d.find("img").remove()); c.find(".ui-select-text").unbind("click"); c.find(".ui-select-text").bind("click", function (b) { if ("readonly" == c.attr("readonly") || "disabled" == c.attr("disabled")) return !1; $(this).parent().addClass("ui-select-focus"); if (d.is(":hidden")) { c.find(".ui-select-option").hide(); $(".ui-select-option").hide(); var e = c.offset().left, f = c.offset().top + 29, g = c.width(); a.width && (g = a.width); d.height() + f < $(window).height() ? d.slideDown(150).css({ top: f, left: e, width: g }) : (f = f - d.height() - 32, d.show().css({ top: f, left: e, width: g }), d.attr("data-show", !0)); d.css("border-top", "1px solid #ccc"); a.appendTo && d.css("position", "inherit"); d.find(".ui-select-option-search").find("input").select() } else d.attr("data-show") ? d.hide() : d.slideUp(150); b.stopPropagation() }); c.find("li div").click(function (a) { a = a ? a : window.event; $(a.srcElement || a.target).hasClass("bbit-tree-ec-icon") || (d.slideUp(150), a.stopPropagation()) }); $(document).click(function (a) { a = a ? a : window.event; var b = a.srcElement || a.target; $(b).hasClass("bbit-tree-ec-icon") || $(b).hasClass("form-control") || (d.attr("data-show") ? d.hide() : d.slideUp(150), c.removeClass("ui-select-focus"), a.stopPropagation()) }); return c }; $.fn.ComboBoxTreeSetValue = function (a) { if ("" != a) { var b = $(this), c = $("#" + b.attr("id") + "-option"); b.attr("data-value", a); var e = c.find("ul").find("[data-value\x3d" + a + "]").html(); e && (b.attr("data-text", e), b.find(".ui-select-text").html(e).css("color", "#000"), c.find("ul").find("[data-value\x3d" + a + "]").parent().parent().addClass("bbit-tree-selected")); return b } }; $.fn.GetWebControls = function (a) { var b = ""; $(this).find("input[type\x3d'text'],input[type\x3d'hidden'],input[type\x3d'checkbox'],select,textarea,.ui-select").each(function (a) { if (a = $(this).attr("id")) switch ($(this).attr("type")) { case "checkbox": b = $("#" + a).is(":checked") ? b + ('"' + a + '":"1",') : b + ('"' + a + '":"0",'); break; case "select": var c = $("#" + a).attr("data-value"); "" == c && (c = ""); b += '"' + a + '":"' + $.trim(c) + '",'; break; case "selectTree": c = $("#" + a).attr("data-value"); "" == c && (c = ""); b += '"' + a + '":"' + $.trim(c) + '",'; break; default: var c = $("#" + a).attr("class"), d = void 0 == c ? !1 : 0 <= c.indexOf("input-wdatepicker"), c = $("#" + a).val(); "" != c || d || (c = ""); b += '"' + a + '":"' + $.trim(c) + '",' } }); b = b.substr(0, b.length - 1); a || (b = b.replace(/&nbsp;/g, "")); b = b.replace(/\\/g, "\\\\"); b = b.replace(/\n/g, "\\n"); return jQuery.parseJSON("{" + b + "}") }; $.fn.SetWebControls = function (a) { var b = $(this), c; for (c in a) { var e = b.find("#" + c); if (e.attr("id")) { var d = e.attr("type"); e.hasClass("input-datepicker") && (d = "datepicker"); var f = $.trim(a[c]).replace(/&nbsp;/g, ""); switch (d) { case "checkbox": 1 == f ? e.attr("checked", "checked") : e.removeAttr("checked"); break; case "select": e.ComboBoxSetValue(f); break; case "selectTree": e.ComboBoxTreeSetValue(f); break; case "datepicker": e.val(formatDate(f, "yyyy-MM-dd")); break; default: e.val(f) } } } }; $.fn.Contextmenu = function () { var a = $(this), b = $(".contextmenu"); $(document).click(function () { b.hide() }); $(document).mousedown(function (a) { 3 == a.which && b.hide() }); b.find("ul"); var c = b.find("li"), e = hideTimer = null, d = 0, f = maxHeight = 0, g = [document.documentElement.offsetWidth, document.documentElement.offsetHeight]; b.hide(); for (d = 0; d < c.length; d++) c[d].getElementsByTagName("ul")[0] && (c[d].className = "sub"), c[d].onmouseover = function () { var a = this, b = a.getElementsByTagName("ul"); a.className += " active"; b[0] && (clearTimeout(hideTimer), e = setTimeout(function () { for (d = 0; d < a.parentNode.children.length; d++) a.parentNode.children[d].getElementsByTagName("ul")[0] && (a.parentNode.children[d].getElementsByTagName("ul")[0].style.display = "none"); b[0].style.display = "block"; b[0].style.top = a.offsetTop + "px"; b[0].style.left = a.offsetWidth + "px"; f = g[0] - b[0].offsetWidth; maxHeight = g[1] - b[0].offsetHeight; f < getOffset.left(b[0]) && (b[0].style.left = -b[0].clientWidth + "px"); maxHeight < getOffset.top(b[0]) && (b[0].style.top = -b[0].clientHeight + a.offsetTop + a.clientHeight + "px") }, 300)) }, c[d].onmouseout = function () { var a = this; a.getElementsByTagName("ul"); a.className = a.className.replace(/\s?active/, ""); clearTimeout(e); hideTimer = setTimeout(function () { for (d = 0; d < a.parentNode.children.length; d++) a.parentNode.children[d].getElementsByTagName("ul")[0] && (a.parentNode.children[d].getElementsByTagName("ul")[0].style.display = "none") }, 300) }; $(a).bind("contextmenu", function () { var a = a || window.event; b.show(); b.css("top", a.clientY + "px"); b.css("left", a.clientX + "px"); f = g[0] - b.width(); maxHeight = g[1] - b.height(); b.offset().top > maxHeight && b.css("top", maxHeight + "px"); b.offset().left > f && b.css("left", f + "px"); return !1 }).bind("click", function () { b.hide() }) }; $.fn.panginationEx = function (a) { var b = $(this); if (!b.attr("id")) return !1; a = $.extend({ firstBtnText: "\u9996\u9875", lastBtnText: "\u5c3e\u9875", prevBtnText: "\u4e0a\u4e00\u9875", nextBtnText: "\u4e0b\u4e00\u9875", showInfo: !0, showJump: !0, jumpBtnText: "\u8df3\u8f6c", showPageSizes: !0, infoFormat: "{start} ~ {end}\u6761\uff0c\u5171{total}\u6761", sortname: "", url: "", success: null, beforeSend: null, complete: null }, a); var c = $.extend({ sidx: a.sortname, sord: "asc" }, a.params); a.remote = { url: a.url, params: c, beforeSend: function (b) { null != a.beforeSend && a.beforeSend(b) }, success: function (b, c) { null != a.success && a.success(b.rows, c) }, complete: function (b, c) { null != a.complete && a.complete(b, c) }, pageIndexName: "page", pageSizeName: "rows", totalName: "records" }; b.page(a) }; $.fn.LeftListShowOfemail = function (a) { var b = $(this); if (!b.attr("id")) return !1; b.append('\x3cul  style\x3d"padding-top: 10px;"\x3e\x3c/ul\x3e'); a = $.extend({ id: "id", name: "text", img: "fa fa-file-o" }, a); b.height(a.height); $.ajax({ url: a.url, data: a.param, type: "GET", dataType: "json", async: !1, success: function (c) { $.each(c, function (c, d) { var e = $('\x3cli class\x3d"" data-value\x3d"' + d[a.id] + '"  data-text\x3d"' + d[a.name] + '" \x3e\x3ci class\x3d"' + a.img + '" style\x3d"vertical-align: middle; margin-top: -2px; margin-right: 8px; font-size: 14px; color: #666666; opacity: 0.9;"\x3e\x3c/i\x3e' + d[a.name] + "\x3c/li\x3e"); 0 == c && e.addClass("active"); b.find("ul").append(e) }); b.find("li").click(function () { var c = $(this).attr("data-value"), d = $(this).attr("data-text"); b.find("li").removeClass("active"); $(this).addClass("active"); a.onnodeclick({ id: c, name: d }) }) }, error: function (a, b, d) { dialogMsg(d, -1) } }) }; $.fn.authorizeButton = function () { var a = $(this); a.find("a.btn").attr("authorize", "no"); a.find("ul.dropdown-menu").find("li").attr("authorize", "no"); var b = tabiframeId().substr(12), c = top.authorizeButtonData[b]; void 0 != c && $.each(c, function (b) { a.find("#" + c[b].EnCode).attr("authorize", "yes") }); a.find("[authorize\x3dno]").remove() }; $.fn.authorizePanel = function () { var a = $(this); a.find("div.panel").attr("authorize", "no"); var b = tabiframeId().substr(12), c = top.authorizeButtonData[b]; void 0 != c && $.each(c, function (b) { a.find("#" + c[b].EnCode).attr("authorize", "yes") }); a.find("[authorize\x3dno]").remove() }; $.fn.authorizeColModel = function () { var a = $(this), b = a.jqGrid("getGridParam", "colModel"); $.each(b, function (c) { "rn" != b[c].name && a.hideCol(b[c].name) }); var c = tabiframeId().substr(12), e = top.authorizeColumnData[c]; void 0 != e && $.each(e, function (b) { a.showCol(e[b].EnCode) }) }; $.fn.jqGridEx = function (a) { var b = $(this), c; if (!b.attr("id")) return !1; var e = { url: "", datatype: "json", height: $(window).height() - 139.5, autowidth: !0, colModel: [], viewrecords: !0, rowNum: 30, rowList: [30, 50, 100], pager: "#gridPager", sortname: "CreateDate desc", rownumbers: !0, shrinkToFit: !1, gridview: !0, onSelectRow: function () { c = $("#" + this.id).getGridParam("selrow") }, gridComplete: function () { $("#" + this.id).setSelection(c, !1) } }; a = $.extend(e, a); b.jqGrid(a) }; $.fn.jqGridRowValue = function (a) { var b = $(this), c = [], e = b.jqGrid("getGridParam", "selarrrow"); if (void 0 != e && "" != e) for (var d = e.length, f = 0; f < d; f++) { var g = b.jqGrid("getRowData", e[f]); c.push(g[a]) } else g = b.jqGrid("getRowData", b.jqGrid("getGridParam", "selrow")), c.push(g[a]); return String(c) }; $.fn.jqGridRow = function () { var a = $(this), b = [], c = a.jqGrid("getGridParam", "selarrrow"); if ("" != c) for (var e = c.length, d = 0; d < e; d++) { var f = a.jqGrid("getRowData", c[d]); b.push(f) } else f = a.jqGrid("getRowData", a.jqGrid("getGridParam", "selrow")), b.push(f); return b }; dialogTop = function (a, b) { $(".tip_container").remove(); var c = parseInt(1E5 * Math.random()); $("body").prepend('\x3cdiv id\x3d"tip_container' + c + '" class\x3d"container tip_container"\x3e\x3cdiv id\x3d"tip' + c + '" class\x3d"mtip"\x3e\x3ci class\x3d"micon"\x3e\x3c/i\x3e\x3cspan id\x3d"tsc' + c + '"\x3e\x3c/span\x3e\x3ci id\x3d"mclose' + c + '" class\x3d"mclose"\x3e\x3c/i\x3e\x3c/div\x3e\x3c/div\x3e'); $(this); var e = $("#tip_container" + c), d = $("#tip" + c), f = $("#tsc" + c); clearTimeout(window.timer); d.attr("class", b).addClass("mtip"); f.html(a); e.slideDown(300); window.timer = setTimeout(function () { e.slideUp(300); $(".tip_container").remove() }, 4E3); $("#tip_container" + c).css("left", ($(window).width() - $("#tip_container" + c).width()) / 2) }; dialogOpen = function (a) { Loading(!0); a = $.extend({ id: null, title: "\u7cfb\u7edf\u7a97\u53e3", width: "100px", height: "100px", url: "", shade: .3, btn: ["\u786e\u8ba4", "\u5173\u95ed"], callBack: null }, a); var b = a.url, c = top.$.windowWidth() > parseInt(a.width.replace("px", "")) ? a.width : top.$.windowWidth() + "px", e = top.$.windowHeight() > parseInt(a.height.replace("px", "")) ? a.height : top.$.windowHeight() + "px"; top.layer.open({ id: a.id, type: 2, shade: a.shade, title: a.title, fix: !1, area: [c, e], content: top.contentPath + b, btn: a.btn, yes: function () { a.callBack(a.id) }, cancel: function () { void 0 != a.cancel && a.cancel(); return !0 } }) }; dialogContent = function (a) { a = $.extend({ id: null, title: "\u7cfb\u7edf\u7a97\u53e3", width: "100px", height: "100px", content: "", btn: ["\u786e\u8ba4", "\u5173\u95ed"], callBack: null }, a); top.layer.open({ id: a.id, type: 1, title: a.title, fix: !1, area: [a.width, a.height], content: a.content, btn: a.btn, yes: function () { a.callBack(a.id) } }) }; dialogAlert = function (a, b) { -1 == b && (b = 2); top.layer.alert(a, { icon: b, title: "\u63d0\u793a" }) }; dialogConfirm = function (a, b) { top.layer.confirm(a, { shift: 0, icon: 7, title: "\u63d0\u793a", btn: ["\u786e\u8ba4", "\u53d6\u6d88"] }, function () { b(!0) }, function () { b(!1) }) }; dialogMsg = function (a, b) { -1 == b && (b = 2); top.layer.msg(a, { icon: b, time: 4E3, shift: 5 }) }; dialogClose = function () { try { var a = top.layer.getFrameIndex(window.name), b = top.$("#layui-layer" + a).find(".layui-layer-btn").find("#IsdialogClose"), c = b.is(":checked"); 0 == b.length && (c = !0); c ? top.layer.close(a) : location.reload() } catch (e) { alert(e) } }; reload = function () { location.reload(); return !1 }; newGuid = function () { for (var a = "", b = 1; 32 >= b; b++) { var c = Math.floor(16 * Math.random()).toString(16), a = a + c; if (8 == b || 12 == b || 16 == b || 20 == b) a += "-" } return a }; formatDate = function (a, b) { if (!a) return ""; var c = a; "string" === typeof a && (c = -1 < a.indexOf("/Date(") ? new Date(parseInt(a.replace("/Date(", "").replace(")/", ""), 10)) : new Date(Date.parse(a.replace(/-/g, "/").replace("T", " ").split(".")[0]))); var e = { "M+": c.getMonth() + 1, "d+": c.getDate(), "h+": c.getHours(), "m+": c.getMinutes(), "s+": c.getSeconds(), "q+": Math.floor((c.getMonth() + 3) / 3), S: c.getMilliseconds() }; /(y+)/.test(b) && (b = b.replace(RegExp.$1, (c.getFullYear() + "").substr(4 - RegExp.$1.length))); for (var d in e) (new RegExp("(" + d + ")")).test(b) && (b = b.replace(RegExp.$1, 1 == RegExp.$1.length ? e[d] : ("00" + e[d]).substr(("" + e[d]).length))); return b }; toDecimal = function (a) { null == a && (a = "0"); a = a.toString().replace(/\$|\,/g, ""); isNaN(a) && (a = "0"); sign = a == (a = Math.abs(a)); a = Math.floor(100 * a + .50000000001); cents = a % 100; a = Math.floor(a / 100).toString(); 10 > cents && (cents = "0" + cents); for (var b = 0; b < Math.floor((a.length - (1 + b)) / 3) ; b++) a = a.substring(0, a.length - (4 * b + 3)) + "" + a.substring(a.length - (4 * b + 3)); return (sign ? "" : "-") + a + "." + cents }; Date.prototype.DateAdd = function (a, b) { switch (a) { case "s": return new Date(Date.parse(this) + 1E3 * b); case "n": return new Date(Date.parse(this) + 6E4 * b); case "h": return new Date(Date.parse(this) + 36E5 * b); case "d": return new Date(Date.parse(this) + 864E5 * b); case "w": return new Date(Date.parse(this) + 6048E5 * b); case "q": return new Date(this.getFullYear(), this.getMonth() + 3 * b, this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds()); case "m": return new Date(this.getFullYear(), this.getMonth() + b, this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds()); case "y": return new Date(this.getFullYear() + b, this.getMonth(), this.getDate(), this.getHours(), this.getMinutes(), this.getSeconds()) } }; request = function (a) { for (var b = location.search.slice(1).split("\x26"), c = 0; c < b.length; c++) { var e = b[c].split("\x3d"); if (e[0] == a) if ("undefined" == unescape(e[1])) break; else return unescape(e[1]) } return "" }; changeUrlParam = function (a, b, c) { var e = new RegExp("(^|)" + b + "\x3d([^\x26]*)(|$)"); b = b + "\x3d" + c; return null != a.match(e) ? a.replace(eval(e), b) : a.match("[?]") ? a + "\x26" + b : a + "?" + b }; $.currentIframe = function () { return "Chrome" == $.isbrowsername() || "FF" == $.isbrowsername() ? null == top.frames[tabiframeId()].contentWindow ? top.frames[tabiframeId()] : top.frames[tabiframeId()].contentWindow : top.frames[tabiframeId()] }; $.isbrowsername = function () { var a = navigator.userAgent, b = -1 < a.indexOf("Opera"); if (b) return "Opera"; if (-1 < a.indexOf("Firefox")) return "FF"; if (-1 < a.indexOf("Chrome")) return -1 < window.navigator.webkitPersistentStorage.toString().indexOf("DeprecatedStorageQuota") ? "Chrome" : "360"; if (-1 < a.indexOf("Safari")) return "Safari"; if (-1 < a.indexOf("compatible") && -1 < a.indexOf("MSIE") && !b) return "IE" }; $.download = function (a, b, c) { if (a && b) { b = "string" == typeof b ? b : jQuery.param(b); var e = ""; $.each(b.split("\x26"), function () { var a = this.split("\x3d"); e += '\x3cinput type\x3d"hidden" name\x3d"' + a[0] + '" value\x3d"' + a[1] + '" /\x3e' }); $('\x3cform action\x3d"' + a + '" method\x3d"' + (c || "post") + '"\x3e' + e + "\x3c/form\x3e").appendTo("body").submit().remove() } }; $.standTabchange = function (a, b) { $(".standtabactived").removeClass("standtabactived"); $(a).addClass("standtabactived"); $(".standtab-pane").css("display", "none"); $("#" + b).css("display", "block") }; $.isNullOrEmpty = function (a) { return "string" == typeof a && "" == a || null == a || void 0 == a ? !0 : !1 }; $.arrayClone = function (a) { return $.map(a, function (a) { return $.extend(!0, {}, a) }) }; $.windowWidth = function () { return $(window).width() }; $.windowHeight = function () { return $(window).height() }; IsNumber = function (a) { $("#" + a).bind("contextmenu", function () { return !1 }); $("#" + a).css("ime-mode", "disabled"); $("#" + a).keypress(function (a) { if (8 != a.which && 0 != a.which && (48 > a.which || 57 < a.which)) return !1 }) }; IsMoney = function (a) { $("#" + a).bind("contextmenu", function () { return !1 }); $("#" + a).css("ime-mode", "disabled"); $("#" + a).bind("keydown", function (a) { var b = window.event ? a.keyCode : a.which; return 190 == b || 110 == b ? 0 > $(this).val().indexOf(".") : 8 == b || 46 == b || 37 <= b && 40 >= b || 35 == b || 36 == b || 9 == b || 13 == b || 48 <= b && 57 >= b && !a.shiftKey }) }; checkedArray = function (a) { var b = !0; if (void 0 == a || "" == a || "null" == a || "undefined" == a) b = !1, dialogMsg("\u60a8\u6ca1\u6709\u9009\u4e2d\u4efb\u4f55\u9879,\u8bf7\u60a8\u9009\u4e2d\u540e\u518d\u64cd\u4f5c\u3002", 0); return b }; checkedRow = function (a) { var b = !0; void 0 == a || "" == a || "null" == a || "undefined" == a ? (b = !1, dialogMsg("\u60a8\u6ca1\u6709\u9009\u4e2d\u4efb\u4f55\u6570\u636e\u9879,\u8bf7\u9009\u4e2d\u540e\u518d\u64cd\u4f5c\uff01", 0)) : 1 < a.split(",").length && (b = !1, dialogMsg("\u5f88\u62b1\u6b49,\u4e00\u6b21\u53ea\u80fd\u9009\u62e9\u4e00\u6761\u8bb0\u5f55\uff01", 0)); return b }; cutStrLength = function (a, b, c) { return a.length > b ? a.substring(0, b) + c : a }; encodeHtml = function (a) { return a && 0 != a.length ? a.replace(/&/g, "\x26amp;").replace(/>/g, "\x26gt;").replace(/</g, "\x26lt;").replace(/'/, "\x26quot;") : "" }; decodeHtml = function (a) { return a && 0 != a.length ? a.replace(/&lt;/g, "\x3c").replace(/&gt;/g, "\x3e").replace(/&amp;/g, "\x26").replace(/&quot;/g, "'") : "" }; String.prototype.Trim = function (a) { try { return a.replace(/^\s+|\s+$/g, "") } catch (b) { return s } };
+﻿$(function () {
+    //收缩板块
+    $(".collapse-link").click(function () {
+        var o = $(this).closest("div.ibox");
+        var e = $(this).find("i");
+        var i = o.find("div.ibox-content");
+        i.slideToggle(200);
+        e.toggleClass("fa-chevron-up").toggleClass("fa-chevron-down");
+        o.toggleClass("").toggleClass("border-bottom"),
+            setTimeout(function () {
+                o.resize(),
+                    o.find("[id^=map-]").resize()
+            },
+                50)
+    });
+    //关闭板块
+    $(".close-link").click(function () {
+        var o = $(this).closest("div.ibox").parent();
+        o.remove();
+    })
+    window.onload = function () {
+        Loading(true);
+    }
+    $(".ui-filter-text").click(function () {
+        if ($(this).next('.ui-filter-list').is(":hidden")) {
+            //$(this).css('border-bottom-color', '#fff');
+            $(".ui-filter-list").css({ "display": "block" });
+            //$(".ui-filter-list").slideDown(10);
+            $(this).addClass("active")
+        } else {
+            $(this).css('border-bottom-color', '#ccc');
+            $(".ui-filter-list").css({ "display": "none" });
+            //$(".ui-filter-list").slideUp(10);
+            $(this).removeClass("active")
+        }
+    });
+    $(".profile-nav li").click(function () {
+        $(".profile-nav li").removeClass("active");
+        $(".profile-nav li").removeClass("hover");
+        $(this).addClass("active")
+    }).hover(function () {
+        if (!$(this).hasClass("active")) {
+            $(this).addClass("hover")
+        }
+    }, function () {
+        $(this).removeClass("hover")
+    })
+})
+Loading = function (bool, text) {
+    var ajaxbg = top.$("#loading_background");
+    if (bool) {
+        ajaxbg.show();
+    } else {
+        ajaxbg.hide();
+        top.$(".ajax-loader").remove();
+    }
+    if (!!text) {
+        ajaxbg.find("p").text(text);
+    } else {
+        ajaxbg.find("p").text("正在加载数据…");
+    }
+    //top.$("#loading_manage").css("left", (top.$('body').width() - top.$("#loading_manage").width()) / 2 - 54);
+    //top.$("#loading_manage").css("top", (top.$('body').height() - top.$("#loading_manage").height()) / 2);
+}
+tabiframeId = function () {
+    var tabs_container = (top.$(".mainContent").find('.on') || top.$(".mainContent").find("iframe[style='display: inline;']"));
+    var id = top.$(".mainContent").find('.on').attr('id') == undefined ? top.$(".mainContent").find("iframe[style='display: inline;']").attr("id") : top.$(".mainContent").find('.on').attr('id');
+    return id;
+}
+
+$.fn.ComboBox = function (options) {
+    //options参数：description,height,width,allowSearch,url,param,data
+    var $select = $(this);
+    if (!$select.attr('id')) {
+        return false;
+    }
+    if (options) {
+        if ($select.find('.ui-select-text').length == 0) {
+            var $select_html = "";
+            $select_html += "<div class=\"ui-select-text\" style='color:#999;'>" + options.description + "</div>";
+            $select_html += "<div class=\"ui-select-option\">";
+            $select_html += "<div class=\"ui-select-option-content\" style=\"max-height: " + options.height + "\">" + $select.html() + "</div>";
+            if (options.allowSearch) {
+                $select_html += "<div class=\"ui-select-option-search\"><input type=\"text\" class=\"form-control\" placeholder=\"搜索关键字\" /><span class=\"input-query\" title=\"Search\"><i class=\"fa fa-search\"></i></span></div>";
+            }
+            $select_html += "</div>";
+            $select.html('');
+            $select.append($select_html);
+        }
+    }
+    var $option_html = $($("<p>").append($select.find('.ui-select-option').clone()).html());
+    $option_html.attr('id', $select.attr('id') + '-option');
+    $select.find('.ui-select-option').remove();
+    if ($option_html.length > 0) {
+        $('body').find('#' + $select.attr('id') + '-option').remove();
+    }
+    $('body').prepend($option_html);
+    var $option = $("#" + $select.attr('id') + "-option");
+    if (options.url != undefined) {
+        $option.find('.ui-select-option-content').html('');
+        $.ajax({
+            url: options.url,
+            data: options.param,
+            type: "GET",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                options.data = data;
+                var json = data;
+                loadComboBoxView(json);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                dialogMsg(errorThrown, -1);
+            }
+        });
+    }
+    else if (options.data != undefined) {
+        var json = options.data;
+        loadComboBoxView(json);
+    }
+    else {
+        $option.find('li').css('padding', "0 5px");
+        $option.find('li').click(function (e) {
+            var data_text = $(this).text();
+            var data_value = $(this).attr('data-value');
+            $select.attr("data-value", data_value).attr("data-text", data_text);
+            $select.find('.ui-select-text').html(data_text).css('color', '#000');
+            $option.slideUp(150);
+            $select.trigger("change");
+            e.stopPropagation();
+        }).hover(function (e) {
+            if (!$(this).hasClass('liactive')) {
+                $(this).toggleClass('on');
+            }
+            e.stopPropagation();
+        });
+    }
+    function loadComboBoxView(json, searchValue, m) {
+        if (json.length > 0) {
+            var $_html = $('<ul></ul>');
+            if (options.description) {
+                $_html.append('<li data-value="">' + options.description + '</li>');
+            }
+            $.each(json, function (i) {
+                var row = json[i];
+                var title = row[options.title];
+                if (title == undefined) {
+                    title = "";
+                }
+                if (searchValue != undefined) {
+                    if (row[m.text].indexOf(searchValue) != -1) {
+                        $_html.append('<li data-value="' + row[options.id] + '" title="' + title + '">' + row[options.text] + '</li>');
+                    }
+                }
+                else {
+                    $_html.append('<li data-value="' + row[options.id] + '" title="' + title + '">' + row[options.text] + '</li>');
+                }
+            });
+            $option.find('.ui-select-option-content').html($_html);
+            $option.find('li').css('padding', "0 5px");
+            $option.find('li').click(function (e) {
+                var data_text = $(this).text();
+                var data_value = $(this).attr('data-value');
+                $select.attr("data-value", data_value).attr("data-text", data_text);
+                $select.find('.ui-select-text').html(data_text).css('color', '#000');
+                $option.slideUp(150);
+                $select.trigger("change");
+                e.stopPropagation();
+            }).hover(function (e) {
+                if (!$(this).hasClass('liactive')) {
+                    $(this).toggleClass('on');
+                }
+                e.stopPropagation();
+            });
+        }
+    }
+    //操作搜索事件
+    if (options.allowSearch) {
+        $option.find('.ui-select-option-search').find('input').bind("keypress", function (e) {
+            if (event.keyCode == "13") {
+                var value = $(this).val();
+                loadComboBoxView($(this)[0].options.data, value, $(this)[0].options);
+            }
+        }).focus(function () {
+            $(this).select();
+        })[0]["options"] = options;
+    }
+
+    $select.unbind('click');
+    $select.bind("click", function (e) {
+        if ($select.attr('readonly') == 'readonly' || $select.attr('disabled') == 'disabled') {
+            return false;
+        }
+        $(this).addClass('ui-select-focus');
+        if ($option.is(":hidden")) {
+            $select.find('.ui-select-option').hide();
+            $('.ui-select-option').hide();
+            var left = $select.offset().left;
+            var top = $select.offset().top + 29;
+            var width = $select.width();
+            if (options.width) {
+                width = options.width;
+            }
+            if (($option.height() + top) < $(window).height()) {
+                $option.slideDown(150).css({ top: top, left: left, width: width });
+            } else {
+                var _top = (top - $option.height() - 32)
+                $option.show().css({ top: _top, left: left, width: width });
+                $option.attr('data-show', true);
+            }
+            $option.css('border-top', '1px solid #ccc');
+            $option.find('li').removeClass('liactive');
+            $option.find('[data-value=' + $select.attr('data-value') + ']').addClass('liactive');
+            $option.find('.ui-select-option-search').find('input').select();
+        } else {
+            if ($option.attr('data-show')) {
+                $option.hide();
+            } else {
+                $option.slideUp(150);
+            }
+        }
+        e.stopPropagation();
+    });
+    $(document).click(function (e) {
+        var e = e ? e : window.event;
+        var tar = e.srcElement || e.target;
+        if (!$(tar).hasClass('form-control')) {
+            if ($option.attr('data-show')) {
+                $option.hide();
+            } else {
+                $option.slideUp(150);
+            }
+            $select.removeClass('ui-select-focus');
+            e.stopPropagation();
+        }
+    });
+    return $select;
+}
+$.fn.ComboBoxSetValue = function (value) {
+    if ($.isNullOrEmpty(value)) {
+        return;
+    }
+    var $select = $(this);
+    var $option = $("#" + $select.attr('id') + "-option");
+    $select.attr('data-value', value);
+    var data_text = $option.find('ul').find('[data-value=' + value + ']').html();
+    if (data_text) {
+        $select.attr('data-text', data_text);
+        $select.find('.ui-select-text').html(data_text).css('color', '#000');
+        $option.find('ul').find('[data-value=' + value + ']').addClass('liactive')
+    }
+    return $select;
+}
+$.fn.MultipleComboBox = function (options) {
+    //options参数：description,height,width,allowSearch,url,param,data
+    var $select = $(this);
+    if (!$select.attr('id')) {
+        return false;
+    }
+    if (options) {
+        if ($select.find('.ui-select-text').length == 0) {
+            var $select_html = "";
+            $select_html += "<div class=\"ui-select-text\" style='color:#999;'>" + options.description + "</div>";
+            $select_html += "<div class=\"ui-select-option\">";
+            $select_html += "<div class=\"ui-select-option-content\" style=\"max-height: " + options.height + "\">" + $select.html() + "</div>";
+
+            if (options.allowSearch) {
+                $select_html += "<div class=\"ui-select-option-search\"><input type=\"text\" class=\"form-control\" placeholder=\"搜索关键字\" /><span class=\"input-query\" title=\"Search\"><i class=\"fa fa-search\"></i></span></div>";
+            }
+            $select_html += "<div class=\"\" style=\"text-align: right;\"><input type=\"button\" class=\"btn btn-primary\" value=\"确定\"/></div>";
+
+            $select_html += "</div>";
+            $select.html('');
+            $select.append($select_html);
+        }
+    }
+    var $option_html = $($("<p>").append($select.find('.ui-select-option').clone()).html());
+    $option_html.attr('id', $select.attr('id') + '-option');
+    $select.find('.ui-select-option').remove();
+    if ($option_html.length > 0) {
+        $('body').find('#' + $select.attr('id') + '-option').remove();
+    }
+    $('body').prepend($option_html);
+    var $option = $("#" + $select.attr('id') + "-option");
+    if (options.url != undefined) {
+        $option.find('.ui-select-option-content').html('');
+        $.ajax({
+            url: options.url,
+            data: options.param,
+            type: "GET",
+            dataType: "json",
+            async: false,
+            success: function (data) {
+                options.data = data;
+                var json = data;
+                loadComboBoxView(json);
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                dialogMsg(errorThrown, -1);
+            }
+        });
+    }
+    else if (options.data != undefined) {
+        var json = options.data;
+        loadComboBoxView(json);
+    }
+    else {
+
+        $option.find('li').css('padding', "0 5px");
+        $option.find('li').click(function (e) {
+            var data_text = $(this).text();
+            var data_value = $(this).attr('data-value');
+            $select.attr("data-value", data_value).attr("data-text", data_text);
+            $select.find('.ui-select-text').html(data_text).css('color', '#000');
+            $option.slideUp(150);
+            $select.trigger("change");
+            e.stopPropagation();
+        }).hover(function (e) {
+            if (!$(this).hasClass('liactive')) {
+                $(this).toggleClass('on');
+            }
+            e.stopPropagation();
+        });
+    }
+    function loadComboBoxView(json, searchValue, m) {
+        if (json.length > 0) {
+            var $_html = $('<ul></ul>');
+            if (options.description) {
+                $_html.append('<li data-value="">' + options.description + '</li>');
+            }
+            $.each(json, function (i) {
+                var row = json[i];
+                var title = row[options.title];
+                if (title == undefined) {
+                    title = "";
+                }
+                if (searchValue != undefined) {
+                    if (row[m.text].indexOf(searchValue) != -1) {
+                        $_html.append('<li data-value="' + row[options.id] + '" title="' + title + '"><input type="checkbox"/>&nbsp;' + row[options.text] + '</li>');
+                    }
+                }
+                else {
+                    $_html.append('<li data-value="' + row[options.id] + '" title="' + title + '"><input type="checkbox"/>&nbsp;' + row[options.text] + '</li>');
+                }
+            });
+            //$_html.append('<li style="text-align:right;"><input type="button" class="btn btn-primary" value="确定"/></li>');
+            $option.find('.ui-select-option-content').html($_html);
+            $option.find('li').css('padding', "0 5px");
+
+        }
+    }
+    //确定事件
+    $option.find('div input[type="button"]').click(function (e) {
+        var data_text = "";
+        var data_value = "";
+        $option.find('li input[type="checkbox"]').each(function () {
+            var $this = $(this);
+            var isChecked = $this.is(":checked");
+            if (isChecked) {
+                data_text += $this.parent().text().replace(/\s/g, "") + ",";
+                data_value += $this.parent().attr('data-value').replace(/\s/g, "") + ",";
+            }
+
+        })
+        data_value = data_value.substring(0, data_value.length - 1);
+        data_text = data_text.substring(0, data_text.length - 1);
+        if (options.maxcheckcount) {
+            var len = data_value.split(',');
+            if (len.length > options.maxcheckcount) {
+                dialogMsg("只允许最大选择" + options.maxcheckcount+"项", 0);
+                return;
+            }
+        }
+        $select.attr("data-value", data_value).attr("data-text", data_text);
+        $select.find('.ui-select-text').html(data_text).css('color', '#000');
+
+        $option.slideUp(150);
+        $select.trigger("change");
+        e.stopPropagation();
+    }).hover(function (e) {
+        if (!$(this).hasClass('liactive')) {
+            $(this).toggleClass('on');
+        }
+        e.stopPropagation();
+    });
+    //操作搜索事件
+    if (options.allowSearch) {
+        $option.find('.ui-select-option-search').find('input').bind("keypress", function (e) {
+            if (event.keyCode == "13") {
+                var value = $(this).val();
+                loadComboBoxView($(this)[0].options.data, value, $(this)[0].options);
+            }
+        }).focus(function () {
+            $(this).select();
+        })[0]["options"] = options;
+    }
+
+    $select.unbind('click');
+    $select.bind("click", function (e) {
+        if ($select.attr('readonly') == 'readonly' || $select.attr('disabled') == 'disabled') {
+            return false;
+        }
+        $(this).addClass('ui-select-focus');
+        if ($option.is(":hidden")) {
+            $select.find('.ui-select-option').hide();
+            $('.ui-select-option').hide();
+            var left = $select.offset().left;
+            var top = $select.offset().top + 29;
+            var width = $select.width();
+            if (options.width) {
+                width = options.width;
+            }
+            if (($option.height() + top) < $(window).height()) {
+                $option.slideDown(150).css({ top: top, left: left, width: width });
+            } else {
+                var _top = (top - $option.height() - 32)
+                $option.show().css({ top: _top, left: left, width: width });
+                $option.attr('data-show', true);
+            }
+            $option.css('border-top', '1px solid #ccc');
+            $option.find('li').removeClass('liactive');
+            var dvalue = $select.attr('data-value');
+            var darr = dvalue.split(',');
+            for (var i = 0; i < darr.length; i++) {
+                var v = darr[i];
+                if (v) {
+                    $option.find('[data-value=' + v + ']').addClass('liactive');
+                }
+            }
+
+            $option.find('.ui-select-option-search').find('input').select();
+        } else {
+            if ($option.attr('data-show')) {
+                $option.hide();
+            } else {
+                $option.slideUp(150);
+            }
+        }
+        e.stopPropagation();
+    });
+    return $select;
+}
+$.fn.MultipleComboBoxSetValue = function (value) {
+    if ($.isNullOrEmpty(value)) {
+        return;
+    }
+    var $select = $(this);
+    var $option = $("#" + $select.attr('id') + "-option");
+    $select.attr('data-value', value);
+    var valarr = value.split(',');
+    var data_text = "";
+    for (var i = 0; i < valarr.length; i++) {
+        var v = valarr[i];
+        if (v) {
+            var text = $option.find('ul').find('[data-value=' + v + ']').text().replace(/\s/g, "");
+            if (text) {
+                data_text = data_text + text + ",";
+                $option.find('ul').find('[data-value=' + v + ']').find('input[type="checkbox"]').attr("checked", "checked");
+                $option.find('ul').find('[data-value=' + v + ']').addClass('liactive');
+            }
+        }
+    }
+    data_text = data_text.substring(0, data_text.length - 1);
+    $select.attr('data-text', data_text);
+    $select.find('.ui-select-text').html(data_text).css('color', '#000');
+    return $select;
+}
+$.fn.ComboBoxTree = function (options) {
+    //options参数：description,height,allowSearch,appendTo,click,url,param,method,icon
+    var $select = $(this);
+    if (!$select.attr('id')) {
+        return false;
+    }
+    if ($select.find('.ui-select-text').length == 0) {
+        var $select_html = "";
+        $select_html += "<div class=\"ui-select-text\"  style='color:#999;'>" + options.description + "</div>";
+        $select_html += "<div class=\"ui-select-option\">";
+        $select_html += "<div class=\"ui-select-option-content\" style=\"max-height: " + options.height + "\"></div>";
+        if (options.allowSearch) {
+            $select_html += "<div class=\"ui-select-option-search\"><input type=\"text\" class=\"form-control\" placeholder=\"搜索关键字\" /><span class=\"input-query\" title=\"Search\"><i class=\"fa fa-search\" title=\"按回车查询\"></i></span></div>";
+        }
+        $select_html += "</div>";
+        $select.append($select_html);
+    }
+
+
+    var $option_html = $($("<p>").append($select.find('.ui-select-option').clone()).html());
+    $option_html.attr('id', $select.attr('id') + '-option');
+    $select.find('.ui-select-option').remove();
+    if (options.appendTo) {
+        $(options.appendTo).prepend($option_html);
+    } else {
+        $('body').prepend($option_html);
+    }
+    var $option = $("#" + $select.attr('id') + "-option");
+    var $option_content = $("#" + $select.attr('id') + "-option").find('.ui-select-option-content');
+    loadtreeview(options.url);
+    function loadtreeview(url) {
+        $option_content.treeview({
+            onnodeclick: function (item) {
+                $select.attr("data-value", item.id).attr("data-text", item.text);
+                $select.find('.ui-select-text').html(item.text).css('color', '#000');
+                $select.trigger("change");
+                if (options.click) {
+                    options.click(item);
+                }
+            },
+            height: options.height,
+            url: url,
+            param: options.param,
+            method: options.method,
+            description: options.description
+        });
+    }
+    if (options.allowSearch) {
+        $option.find('.ui-select-option-search').find('input').attr('data-url', options.url);
+        $option.find('.ui-select-option-search').find('input').bind("keypress", function (e) {
+            if (event.keyCode == "13") {
+                var value = $(this).val();
+                var url = changeUrlParam($option.find('.ui-select-option-search').find('input').attr('data-url'), "keyword", escape(value));
+                loadtreeview(url);
+            }
+        }).focus(function () {
+            $(this).select();
+        });
+    }
+    if (options.icon) {
+        $option.find('i').remove();
+        $option.find('img').remove();
+    }
+    $select.find('.ui-select-text').unbind('click');
+    $select.find('.ui-select-text').bind("click", function (e) {
+        if ($select.attr('readonly') == 'readonly' || $select.attr('disabled') == 'disabled') {
+            return false;
+        }
+        $(this).parent().addClass('ui-select-focus');
+        if ($option.is(":hidden")) {
+            $select.find('.ui-select-option').hide();
+            $('.ui-select-option').hide();
+            var left = $select.offset().left;
+            var top = $select.offset().top + 29;
+            var width = $select.width();
+            if (options.width) {
+                width = options.width;
+            }
+            if (($option.height() + top) < $(window).height()) {
+                $option.slideDown(150).css({ top: top, left: left, width: width });
+            } else {
+                var _top = (top - $option.height() - 32);
+                $option.show().css({ top: _top, left: left, width: width });
+                $option.attr('data-show', true);
+            }
+            $option.css('border-top', '1px solid #ccc');
+            if (options.appendTo) {
+                $option.css("position", "inherit")
+            }
+            $option.find('.ui-select-option-search').find('input').select();
+        } else {
+            if ($option.attr('data-show')) {
+                $option.hide();
+            } else {
+                $option.slideUp(150);
+            }
+        }
+        e.stopPropagation();
+    });
+    $select.find('li div').click(function (e) {
+        var e = e ? e : window.event;
+        var tar = e.srcElement || e.target;
+        if (!$(tar).hasClass('bbit-tree-ec-icon')) {
+            $option.slideUp(150);
+            e.stopPropagation();
+        }
+    });
+    $(document).click(function (e) {
+        var e = e ? e : window.event;
+        var tar = e.srcElement || e.target;
+        if (!$(tar).hasClass('bbit-tree-ec-icon') && !$(tar).hasClass('form-control')) {
+            if ($option.attr('data-show')) {
+                $option.hide();
+            } else {
+                $option.slideUp(150);
+            }
+            $select.removeClass('ui-select-focus');
+            e.stopPropagation();
+        }
+    });
+    return $select;
+}
+$.fn.ComboBoxTreeSetValue = function (value) {
+    if (value == "") {
+        return;
+    }
+    var $select = $(this);
+    var $option = $("#" + $select.attr('id') + "-option");
+    $select.attr('data-value', value);
+    var data_text = $option.find('ul').find('[data-value=' + value + ']').html();
+    if (data_text) {
+        $select.attr('data-text', data_text);
+        $select.find('.ui-select-text').html(data_text).css('color', '#000');
+        $option.find('ul').find('[data-value=' + value + ']').parent().parent().addClass('bbit-tree-selected');
+    }
+    return $select;
+}
+$.fn.GetWebControls = function (keyValue) {
+    var reVal = "";
+    $(this).find("input[type='text'],input[type='hidden'],input[type='checkbox'],select,textarea,.ui-select").each(function (r) {
+        var id = $(this).attr('id');
+        if (id) {
+            var type = $(this).attr('type');
+            switch (type) {
+                case "checkbox":
+                    if ($("#" + id).is(":checked")) {
+                        reVal += '"' + id + '"' + ':' + '"1",'
+                    } else {
+                        reVal += '"' + id + '"' + ':' + '"0",'
+                    }
+                    break;
+                case "select":
+                    var value = $("#" + id).attr('data-value');
+                    if (value == "") {
+                        value = "";
+                    }
+                    reVal += '"' + id + '"' + ':' + '"' + $.trim(value) + '",'
+                    break;
+                case "selectTree":
+                    var value = $("#" + id).attr('data-value');
+                    if (value == "") {
+                        value = "";
+                    }
+                    reVal += '"' + id + '"' + ':' + '"' + $.trim(value) + '",'
+                    break;
+                default:
+                    var classList = $("#" + id).attr('class');
+                    var isDate = classList == undefined ? false : classList.indexOf("input-wdatepicker") >= 0;
+
+                    var value = $("#" + id).val();
+                    if (value == "" && !isDate) {
+                        value = "";
+                    }
+                    reVal += '"' + id + '"' + ':' + '"' + $.trim(value) + '",'
+                    break;
+            }
+        }
+    });
+
+    reVal = reVal.substr(0, reVal.length - 1);
+    if (!keyValue) {
+        reVal = reVal.replace(/&nbsp;/g, '');
+    }
+    reVal = reVal.replace(/\\/g, '\\\\');
+    reVal = reVal.replace(/\n/g, '\\n');
+    var postdata = jQuery.parseJSON('{' + reVal + '}');
+    //阻止伪造请求
+    //if ($('[name=__RequestVerificationToken]').length > 0) {
+    //    postdata["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+    //}
+
+    return postdata;
+};
+$.fn.SetWebControls = function (data) {
+    var $id = $(this)
+    for (var key in data) {
+        var id = $id.find('#' + key);
+        if (id.attr('id')) {
+            var type = id.attr('type');
+            if (id.hasClass("input-datepicker")) {
+                type = "datepicker";
+            }
+            var value = $.trim(data[key]).replace(/&nbsp;/g, '');
+            switch (type) {
+                case "checkbox":
+                    if (value == 1) {
+                        id.attr("checked", 'checked');
+                    } else {
+                        id.removeAttr("checked");
+                    }
+                    break;
+                case "select":
+                    id.ComboBoxSetValue(value);
+                    break;
+                case "selectTree":
+                    id.ComboBoxTreeSetValue(value);
+                    break;
+                case "datepicker":
+                    id.val(formatDate(value, 'yyyy-MM-dd'));
+                    break;
+                default:
+                    id.val(value);
+                    break;
+            }
+        }
+    }
+}
+$.fn.Contextmenu = function () {
+    var element = $(this);
+    var oMenu = $('.contextmenu');
+    $(document).click(function () {
+        oMenu.hide();
+    });
+    $(document).mousedown(function (e) {
+        if (3 == e.which) {
+            oMenu.hide();
+        }
+    })
+    var aUl = oMenu.find("ul");
+    var aLi = oMenu.find("li");
+    var showTimer = hideTimer = null;
+    var i = 0;
+    var maxWidth = maxHeight = 0;
+    var aDoc = [document.documentElement.offsetWidth, document.documentElement.offsetHeight];
+    oMenu.hide();
+    for (i = 0; i < aLi.length; i++) {
+        //为含有子菜单的li加上箭头
+        aLi[i].getElementsByTagName("ul")[0] && (aLi[i].className = "sub");
+        //鼠标移入
+        aLi[i].onmouseover = function () {
+            var oThis = this;
+            var oUl = oThis.getElementsByTagName("ul");
+            //鼠标移入样式
+            oThis.className += " active";
+            //显示子菜单
+            if (oUl[0]) {
+                clearTimeout(hideTimer);
+                showTimer = setTimeout(function () {
+                    for (i = 0; i < oThis.parentNode.children.length; i++) {
+                        oThis.parentNode.children[i].getElementsByTagName("ul")[0] &&
+                            (oThis.parentNode.children[i].getElementsByTagName("ul")[0].style.display = "none");
+                    }
+                    oUl[0].style.display = "block";
+                    oUl[0].style.top = oThis.offsetTop + "px";
+                    oUl[0].style.left = oThis.offsetWidth + "px";
+
+                    //最大显示范围					
+                    maxWidth = aDoc[0] - oUl[0].offsetWidth;
+                    maxHeight = aDoc[1] - oUl[0].offsetHeight;
+
+                    //防止溢出
+                    maxWidth < getOffset.left(oUl[0]) && (oUl[0].style.left = -oUl[0].clientWidth + "px");
+                    maxHeight < getOffset.top(oUl[0]) && (oUl[0].style.top = -oUl[0].clientHeight + oThis.offsetTop + oThis.clientHeight + "px")
+                }, 300);
+            }
+        };
+        //鼠标移出	
+        aLi[i].onmouseout = function () {
+            var oThis = this;
+            var oUl = oThis.getElementsByTagName("ul");
+            //鼠标移出样式
+            oThis.className = oThis.className.replace(/\s?active/, "");
+
+            clearTimeout(showTimer);
+            hideTimer = setTimeout(function () {
+                for (i = 0; i < oThis.parentNode.children.length; i++) {
+                    oThis.parentNode.children[i].getElementsByTagName("ul")[0] &&
+                        (oThis.parentNode.children[i].getElementsByTagName("ul")[0].style.display = "none");
+                }
+            }, 300);
+        };
+    }
+    //自定义右键菜单
+    $(element).bind("contextmenu", function () {
+        var event = event || window.event;
+        oMenu.show();
+        oMenu.css('top', event.clientY + "px");
+        oMenu.css('left', event.clientX + "px");
+        //最大显示范围
+        maxWidth = aDoc[0] - oMenu.width();
+        maxHeight = aDoc[1] - oMenu.height();
+        //防止菜单溢出
+        if (oMenu.offset().top > maxHeight) {
+            oMenu.css('top', maxHeight + "px");
+        }
+        if (oMenu.offset().left > maxWidth) {
+            oMenu.css('left', maxWidth + "px");
+        }
+        return false;
+    }).bind("click", function () {
+        oMenu.hide();
+    });
+}
+$.fn.panginationEx = function (options) {
+    var $pager = $(this);
+    if (!$pager.attr('id')) {
+        return false;
+    }
+    var defaults = {
+        firstBtnText: '首页',
+        lastBtnText: '尾页',
+        prevBtnText: '上一页',
+        nextBtnText: '下一页',
+        showInfo: true,
+        showJump: true,
+        jumpBtnText: '跳转',
+        showPageSizes: true,
+        infoFormat: '{start} ~ {end}条，共{total}条',
+        sortname: '',
+        url: "",
+        success: null,
+        beforeSend: null,
+        complete: null
+    };
+    var options = $.extend(defaults, options);
+    var params = $.extend({ sidx: options.sortname, sord: "asc" }, options.params);
+    options.remote = {
+        url: options.url,  //请求地址
+        params: params,       //自定义请求参数
+        beforeSend: function (XMLHttpRequest) {
+            if (options.beforeSend != null) {
+                options.beforeSend(XMLHttpRequest);
+            }
+        },
+        success: function (result, pageIndex) {
+            //回调函数
+            //result 为 请求返回的数据，呈现数据
+            if (options.success != null) {
+                options.success(result.rows, pageIndex);
+            }
+        },
+        complete: function (XMLHttpRequest, textStatu) {
+            if (options.complete != null) {
+                options.complete(XMLHttpRequest, textStatu);
+            }
+            //...
+        },
+        pageIndexName: 'page',     //请求参数，当前页数，索引从0开始
+        pageSizeName: 'rows',       //请求参数，每页数量
+        totalName: 'records'              //指定返回数据的总数据量的字段名
+    }
+    $pager.page(options);
+}
+$.fn.LeftListShowOfemail = function (options) {
+    var $list = $(this);
+    if (!$list.attr('id')) {
+        return false;
+    }
+    $list.append('<ul  style="padding-top: 10px;"></ul>');
+    var defaults = {
+        id: "id",
+        name: "text",
+        img: "fa fa-file-o",
+
+    };
+    var options = $.extend(defaults, options);
+    $list.height(options.height);
+    $.ajax({
+        url: options.url,
+        data: options.param,
+        type: "GET",
+        dataType: "json",
+        async: false,
+        success: function (data) {
+            $.each(data, function (i, item) {
+                var $_li = $('<li class="" data-value="' + item[options.id] + '"  data-text="' + item[options.name] + '" ><i class="' + options.img + '" style="vertical-align: middle; margin-top: -2px; margin-right: 8px; font-size: 14px; color: #666666; opacity: 0.9;"></i>' + item[options.name] + '</li>');
+                if (i == 0) {
+                    $_li.addClass("active");
+                }
+                $list.find('ul').append($_li);
+            });
+            $list.find('li').click(function () {
+                var key = $(this).attr('data-value');
+                var value = $(this).attr('data-text');
+                $list.find('li').removeClass('active');
+                $(this).addClass('active');
+                options.onnodeclick({ id: key, name: value });
+            });
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            dialogMsg(errorThrown, -1);
+        }
+    });
+}
+//按钮权限
+$.fn.authorizeButton = function () {
+    var $element = $(this);
+    $element.find('a.btn').attr('authorize', 'no')
+    $element.find('ul.dropdown-menu').find('li').attr('authorize', 'no')
+    var moduleId = tabiframeId().substr(12);//取当前iframe的id
+    //alert(moduleId)
+    var data = top.authorizeButtonData[moduleId];
+    if (data != undefined) {
+        $.each(data, function (i) {
+            $element.find("#" + data[i].EnCode).attr('authorize', 'yes');
+        });
+    }
+    $element.find('[authorize=no]').remove();
+}
+//容器权限
+$.fn.authorizePanel = function () {
+    var $element = $(this);
+    $element.find('div.panel').attr('authorize', 'no')
+    var moduleId = tabiframeId().substr(12);//取当前iframe的id
+    //alert(moduleId)
+    var data = top.authorizeButtonData[moduleId];
+    if (data != undefined) {
+        $.each(data, function (i) {
+            $element.find("#" + data[i].EnCode).attr('authorize', 'yes');
+        });
+    }
+    $element.find('[authorize=no]').remove();
+}
+//列权限
+$.fn.authorizeColModel = function () {
+    var $element = $(this);
+    var columnModel = $element.jqGrid('getGridParam', 'colModel');
+    $.each(columnModel, function (i) {
+        //alert(columnModel[i].name)
+        if (columnModel[i].name != "rn") {
+            $element.hideCol(columnModel[i].name);
+        }
+    });
+    var moduleId = tabiframeId().substr(12);//取当前iframe的id
+    var data = top.authorizeColumnData[moduleId];
+    if (data != undefined) {
+        $.each(data, function (i) {
+            $element.showCol(data[i].EnCode);
+        });
+    }
+}
+
+$.fn.jqGridEx = function (options) {
+    var $jqGrid = $(this);
+    var _selectedRowIndex;
+    if (!$jqGrid.attr('id')) {
+        return false;
+    }
+    var defaults = {
+        url: "",
+        datatype: "json",
+        height: $(window).height() - 139.5,
+        autowidth: true,
+        colModel: [],
+        viewrecords: true,
+        rowNum: 30,
+        rowList: [30, 50, 100],
+        pager: "#gridPager",
+        sortname: 'CreateDate desc',
+        rownumbers: true,
+        shrinkToFit: false,
+        gridview: true,
+        onSelectRow: function () {
+            _selectedRowIndex = $("#" + this.id).getGridParam('selrow');
+        },
+        gridComplete: function () {
+            $("#" + this.id).setSelection(_selectedRowIndex, false);
+        }
+    };
+    var options = $.extend(defaults, options);
+    $jqGrid.jqGrid(options);
+}
+$.fn.jqGridRowValue = function (code) {
+    var $jgrid = $(this);
+    var json = [];
+    var selectedRowIds = $jgrid.jqGrid("getGridParam", "selarrrow");
+    if (selectedRowIds != undefined && selectedRowIds != "") {
+        var len = selectedRowIds.length;
+        for (var i = 0; i < len; i++) {
+            var rowData = $jgrid.jqGrid('getRowData', selectedRowIds[i]);
+            json.push(rowData[code]);
+        }
+    } else {
+        var rowData = $jgrid.jqGrid('getRowData', $jgrid.jqGrid('getGridParam', 'selrow'));
+        json.push(rowData[code]);
+    }
+    return String(json);
+}
+$.fn.jqGridRow = function () {
+    var $jgrid = $(this);
+    var json = [];
+    var selectedRowIds = $jgrid.jqGrid("getGridParam", "selarrrow");
+    if (selectedRowIds != "") {
+        var len = selectedRowIds.length;
+        for (var i = 0; i < len; i++) {
+            var rowData = $jgrid.jqGrid('getRowData', selectedRowIds[i]);
+            json.push(rowData);
+        }
+    } else {
+        var rowData = $jgrid.jqGrid('getRowData', $jgrid.jqGrid('getGridParam', 'selrow'));
+        json.push(rowData);
+    }
+    return json;
+}
+
+dialogTop = function (content, type) {
+    $(".tip_container").remove();
+    var bid = parseInt(Math.random() * 100000);
+    $("body").prepend('<div id="tip_container' + bid + '" class="container tip_container"><div id="tip' + bid + '" class="mtip"><i class="micon"></i><span id="tsc' + bid + '"></span><i id="mclose' + bid + '" class="mclose"></i></div></div>');
+    var $this = $(this);
+    var $tip_container = $("#tip_container" + bid);
+    var $tip = $("#tip" + bid);
+    var $tipSpan = $("#tsc" + bid);
+    //先清楚定时器
+    clearTimeout(window.timer);
+    //主体元素绑定事件
+    $tip.attr("class", type).addClass("mtip");
+    $tipSpan.html(content);
+    $tip_container.slideDown(300);
+    //提示层隐藏定时器
+    window.timer = setTimeout(function () {
+        $tip_container.slideUp(300);
+        $(".tip_container").remove();
+    }, 4000);
+    $("#tip_container" + bid).css("left", ($(window).width() - $("#tip_container" + bid).width()) / 2);
+}
+dialogOpen = function (options) {
+    Loading(true);
+    var defaults = {
+        id: null,
+        title: '系统窗口',
+        width: "100px",
+        height: "100px",
+        url: '',
+        shade: 0.3,
+        btn: ['确认', '关闭'],
+        callBack: null
+    };
+    var options = $.extend(defaults, options);
+    var _url = options.url;
+    var _width = top.$.windowWidth() > parseInt(options.width.replace('px', '')) ? options.width : top.$.windowWidth() + 'px';
+    var _height = top.$.windowHeight() > parseInt(options.height.replace('px', '')) ? options.height : top.$.windowHeight() + 'px';
+    top.layer.open({
+        id: options.id,
+        type: 2,
+        shade: options.shade,
+        title: options.title,
+        fix: false,
+        area: [_width, _height],
+        content: top.contentPath + _url,
+        btn: options.btn,
+        yes: function () {
+            options.callBack(options.id)
+        }, cancel: function () {
+            if (options.cancel != undefined) {
+                options.cancel();
+            }
+            return true;
+        }
+    });
+}
+dialogContent = function (options) {
+    var defaults = {
+        id: null,
+        title: '系统窗口',
+        width: "100px",
+        height: "100px",
+        content: '',
+        btn: ['确认', '关闭'],
+        callBack: null
+    };
+    var options = $.extend(defaults, options);
+    top.layer.open({
+        id: options.id,
+        type: 1,
+        title: options.title,
+        fix: false,
+        area: [options.width, options.height],
+        content: options.content,
+        btn: options.btn,
+        yes: function () {
+            options.callBack(options.id)
+        }
+    });
+}
+dialogAlert = function (content, type) {
+    if (type == -1) {
+        type = 2;
+    }
+    top.layer.alert(content, {
+        icon: type,
+        title: "提示"
+    });
+}
+dialogConfirm = function (content, callBack) {
+    top.layer.confirm(content, {
+        shift: 0,
+        icon: 7,
+        title: "提示",
+        btn: ['确认', '取消'],
+    }, function () {
+        callBack(true);
+    }, function () {
+        callBack(false)
+    });
+}
+dialogMsg = function (content, type) {
+    if (type == -1) {
+        type = 2;
+    }
+    top.layer.msg(content, { icon: type, time: 4000, shift: 5 });
+}
+dialogClose = function () {
+    try {
+        var index = top.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+        var $IsdialogClose = top.$("#layui-layer" + index).find('.layui-layer-btn').find("#IsdialogClose");
+        var IsClose = $IsdialogClose.is(":checked");
+        if ($IsdialogClose.length == 0) {
+            IsClose = true;
+        }
+        if (IsClose) {
+            top.layer.close(index);
+        } else {
+            location.reload();
+        }
+    } catch (e) {
+        alert(e)
+    }
+}
+reload = function () {
+    location.reload();
+    return false;
+}
+newGuid = function () {
+    var guid = "";
+    for (var i = 1; i <= 32; i++) {
+        var n = Math.floor(Math.random() * 16.0).toString(16);
+        guid += n;
+        if ((i == 8) || (i == 12) || (i == 16) || (i == 20)) guid += "-";
+    }
+    return guid;
+}
+formatDate = function (v, format) {
+    if (!v) return "";
+    var d = v;
+    if (typeof v === 'string') {
+        if (v.indexOf("/Date(") > -1)
+            d = new Date(parseInt(v.replace("/Date(", "").replace(")/", ""), 10));
+        else
+            d = new Date(Date.parse(v.replace(/-/g, "/").replace("T", " ").split(".")[0]));//.split(".")[0] 用来处理出现毫秒的情况，截取掉.xxx，否则会出错
+    }
+    var o = {
+        "M+": d.getMonth() + 1,  //month
+        "d+": d.getDate(),       //day
+        "h+": d.getHours(),      //hour
+        "m+": d.getMinutes(),    //minute
+        "s+": d.getSeconds(),    //second
+        "q+": Math.floor((d.getMonth() + 3) / 3),  //quarter
+        "S": d.getMilliseconds() //millisecond
+    };
+    if (/(y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (d.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
+    }
+    return format;
+};
+toDecimal = function (num) {
+    if (num == null) {
+        num = "0";
+    }
+    num = num.toString().replace(/\$|\,/g, '');
+    if (isNaN(num))
+        num = "0";
+    sign = (num == (num = Math.abs(num)));
+    num = Math.floor(num * 100 + 0.50000000001);
+    cents = num % 100;
+    num = Math.floor(num / 100).toString();
+    if (cents < 10)
+        cents = "0" + cents;
+    for (var i = 0; i < Math.floor((num.length - (1 + i)) / 3); i++)
+        num = num.substring(0, num.length - (4 * i + 3)) + '' +
+            num.substring(num.length - (4 * i + 3));
+    return (((sign) ? '' : '-') + num + '.' + cents);
+}
+Date.prototype.DateAdd = function (strInterval, Number) {
+    //y年 q季度 m月 d日 w周 h小时 n分钟 s秒 ms毫秒
+    var dtTmp = this;
+    switch (strInterval) {
+        case 's': return new Date(Date.parse(dtTmp) + (1000 * Number));
+        case 'n': return new Date(Date.parse(dtTmp) + (60000 * Number));
+        case 'h': return new Date(Date.parse(dtTmp) + (3600000 * Number));
+        case 'd': return new Date(Date.parse(dtTmp) + (86400000 * Number));
+        case 'w': return new Date(Date.parse(dtTmp) + ((86400000 * 7) * Number));
+        case 'q': return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number * 3, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+        case 'm': return new Date(dtTmp.getFullYear(), (dtTmp.getMonth()) + Number, dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+        case 'y': return new Date((dtTmp.getFullYear() + Number), dtTmp.getMonth(), dtTmp.getDate(), dtTmp.getHours(), dtTmp.getMinutes(), dtTmp.getSeconds());
+    }
+}
+request = function (keyValue) {
+    var search = location.search.slice(1);
+    var arr = search.split("&");
+    for (var i = 0; i < arr.length; i++) {
+        var ar = arr[i].split("=");
+        if (ar[0] == keyValue) {
+            if (unescape(ar[1]) == 'undefined') {
+                return "";
+            } else {
+                return unescape(ar[1]);
+            }
+        }
+    }
+    return "";
+}
+changeUrlParam = function (url, key, value) {
+    var newUrl = "";
+    var reg = new RegExp("(^|)" + key + "=([^&]*)(|$)");
+    var tmp = key + "=" + value;
+    if (url.match(reg) != null) {
+        newUrl = url.replace(eval(reg), tmp);
+    } else {
+        if (url.match("[\?]")) {
+            newUrl = url + "&" + tmp;
+        }
+        else {
+            newUrl = url + "?" + tmp;
+        }
+    }
+    return newUrl;
+}
+
+//当前的iframe
+$.currentIframe = function () {
+    if ($.isbrowsername() == "Chrome" || $.isbrowsername() == "FF") {
+        //修改编辑保存时无法自动关闭的bug
+        if (top.frames[tabiframeId()].contentWindow == null)
+            return top.frames[tabiframeId()];
+        else
+            return top.frames[tabiframeId()].contentWindow;
+    }
+    else {
+        return top.frames[tabiframeId()];
+    }
+}
+$.isbrowsername = function () {
+    var userAgent = navigator.userAgent; //取得浏览器的userAgent字符串
+    var isOpera = userAgent.indexOf("Opera") > -1;
+    if (isOpera) {
+        return "Opera"
+    }; //判断是否Opera浏览器
+    if (userAgent.indexOf("Firefox") > -1) {
+        return "FF";
+    } //判断是否Firefox浏览器
+    if (userAgent.indexOf("Chrome") > -1) {
+        if (window.navigator.webkitPersistentStorage.toString().indexOf('DeprecatedStorageQuota') > -1) {
+            return "Chrome";
+        } else {
+            return "360";
+        }
+    }//判断是否Chrome浏览器//360浏览器
+    if (userAgent.indexOf("Safari") > -1) {
+        return "Safari";
+    } //判断是否Safari浏览器
+    if (userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera) {
+        return "IE";
+    }; //判断是否IE浏览器
+}
+$.download = function (url, data, method) {
+    if (url && data) {
+        data = typeof data == 'string' ? data : jQuery.param(data);
+        var inputs = '';
+        $.each(data.split('&'), function () {
+            var pair = this.split('=');
+            inputs += '<input type="hidden" name="' + pair[0] + '" value="' + pair[1] + '" />';
+        });
+        $('<form action="' + url + '" method="' + (method || 'post') + '">' + inputs + '</form>').appendTo('body').submit().remove();
+    };
+};
+$.standTabchange = function (object, forid) {
+    $(".standtabactived").removeClass("standtabactived");
+    $(object).addClass("standtabactived");
+    $('.standtab-pane').css('display', 'none');
+    $('#' + forid).css('display', 'block');
+}
+$.isNullOrEmpty = function (obj) {
+    if ((typeof (obj) == "string" && obj == "") || obj == null || obj == undefined) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+$.arrayClone = function (data) {
+    return $.map(data, function (obj) {
+        return $.extend(true, {}, obj);
+    });
+}
+$.windowWidth = function () {
+    return $(window).width();
+}
+$.windowHeight = function () {
+    return $(window).height();
+}
+IsNumber = function (obj) {
+    $("#" + obj).bind("contextmenu", function () {
+        return false;
+    });
+    $("#" + obj).css('ime-mode', 'disabled');
+    $("#" + obj).keypress(function (e) {
+        if (e.which != 8 && e.which != 0 && (e.which < 48 || e.which > 57)) {
+            return false;
+        }
+    });
+}
+IsMoney = function (obj) {
+    $("#" + obj).bind("contextmenu", function () {
+        return false;
+    });
+    $("#" + obj).css('ime-mode', 'disabled');
+    $("#" + obj).bind("keydown", function (e) {
+        var key = window.event ? e.keyCode : e.which;
+        if (isFullStop(key)) {
+            return $(this).val().indexOf('.') < 0;
+        }
+        return (isSpecialKey(key)) || ((isNumber(key) && !e.shiftKey));
+    });
+    function isNumber(key) {
+        return key >= 48 && key <= 57
+    }
+    function isSpecialKey(key) {
+        return key == 8 || key == 46 || (key >= 37 && key <= 40) || key == 35 || key == 36 || key == 9 || key == 13
+    }
+    function isFullStop(key) {
+        return key == 190 || key == 110;
+    }
+}
+checkedArray = function (id) {
+    var isOK = true;
+    if (id == undefined || id == "" || id == 'null' || id == 'undefined') {
+        isOK = false;
+        dialogMsg('您没有选中任何项,请您选中后再操作。', 0);
+    }
+    return isOK;
+}
+checkedRow = function (id) {
+    var isOK = true;
+    if (id == undefined || id == "" || id == 'null' || id == 'undefined') {
+        isOK = false;
+        dialogMsg('您没有选中任何数据项,请选中后再操作！', 0);
+    } else if (id.split(",").length > 1) {
+        isOK = false;
+        dialogMsg('很抱歉,一次只能选择一条记录！', 0);
+    }
+    return isOK;
+}
+cutStrLength = function (str, Ilength, exp) {
+    var _exp = "...";
+    if (exp != "") {
+        _exp = exp;
+    }
+    if (str.length > Ilength) {
+        return str.substring(0, Ilength) + exp;
+    }
+    else
+        return str;
+}
+// HTML编码
+encodeHtml = function (value) {
+    if (!value || value.length == 0) {
+        return "";
+    }
+
+    return value.replace(/&/g, "&amp;")
+        .replace(/>/g, "&gt;")
+        .replace(/</g, "&lt;")
+        .replace(/'/, "&quot;");
+}
+
+
+/// <summary>
+/// HTML解码
+/// </summary>
+decodeHtml = function (value) {
+    if (!value || value.length == 0) {
+        return "";
+    };
+    return value.replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&amp;/g, "&")
+        .replace(/&quot;/g, "'");
+}
+
+//处理空格
+String.prototype.Trim = function (str) {
+    try {
+        return str.replace(/^\s+|\s+$/g, "");
+    }
+    catch (e) {
+        return s;
+    }
+}

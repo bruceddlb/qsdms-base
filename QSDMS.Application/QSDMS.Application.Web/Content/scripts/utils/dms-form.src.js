@@ -1,1 +1,209 @@
-﻿$.SaveForm = function (a) { a = $.extend({ url: "", param: [], type: "post", dataType: "json", loading: "\u6b63\u5728\u5904\u7406\u6570\u636e...", success: null, close: !0 }, a); Loading(!0, a.loading); 0 < $("[name\x3d__RequestVerificationToken]").length && (a.param.__RequestVerificationToken = $("[name\x3d__RequestVerificationToken]").val()); window.setTimeout(function () { $.ajax({ url: a.url, data: a.param, type: a.type, dataType: a.dataType, success: function (b) { b.IsSuccess ? (Loading(!1), dialogMsg(b.Message, 1), a.success(b), 1 == a.close && dialogClose()) : dialogAlert(b.Message, -1) }, error: function (a, d, c) { Loading(!1); dialogMsg(c, -1) }, beforeSend: function () { Loading(!0, a.loading) }, complete: function () { Loading(!1) } }) }, 500) }; $.SetForm = function (a) { a = $.extend({ url: "", param: [], type: "get", dataType: "json", success: null, async: !1 }, a); $.ajax({ url: a.url, data: a.param, type: a.type, dataType: a.dataType, async: a.async, success: function (b) { b ? a.success(b) : dialogAlert("methed error", -1) }, error: function (a, d, c) { dialogMsg(c, -1) }, beforeSend: function () { Loading(!0) }, complete: function () { Loading(!1) } }) }; $.RemoveForm = function (a) { a = $.extend({ msg: "\u6ce8\uff1a\u60a8\u786e\u5b9a\u8981\u5220\u9664\u5417\uff1f\u8be5\u64cd\u4f5c\u5c06\u65e0\u6cd5\u6062\u590d", loading: "\u6b63\u5728\u5220\u9664\u6570\u636e...", url: "", param: [], type: "post", dataType: "json", success: null }, a); dialogConfirm(a.msg, function (b) { b && (Loading(!0, a.loading), window.setTimeout(function () { var b = a.param; 0 < $("[name\x3d__RequestVerificationToken]").length && (b.__RequestVerificationToken = $("[name\x3d__RequestVerificationToken]").val()); $.ajax({ url: a.url, data: b, type: a.type, dataType: a.dataType, success: function (c) { c.IsSuccess ? (dialogMsg(c.Message, 1), a.success(c)) : dialogAlert(c.Message, -1) }, error: function (a, b, d) { Loading(!1); dialogMsg(d, -1) }, beforeSend: function () { Loading(!0, a.loading) }, complete: function () { Loading(!1) } }) }, 500)) }) }; $.ConfirmAjax = function (a) { a = $.extend({ msg: "\u63d0\u793a\u4fe1\u606f", loading: "\u6b63\u5728\u5904\u7406\u6570\u636e...", url: "", param: [], type: "post", dataType: "json", success: null }, a); dialogConfirm(a.msg, function (b) { b && (Loading(!0, a.loading), window.setTimeout(function () { var b = a.param; 0 < $("[name\x3d__RequestVerificationToken]").length && (b.__RequestVerificationToken = $("[name\x3d__RequestVerificationToken]").val()); $.ajax({ url: a.url, data: b, type: a.type, dataType: a.dataType, success: function (b) { Loading(!1); b.IsSuccess ? (dialogMsg(b.Message, 1), a.success(b)) : dialogAlert(b.Message, -1) }, error: function (a, b, d) { Loading(!1); dialogMsg(d, -1) }, beforeSend: function () { Loading(!0, a.loading) }, complete: function () { Loading(!1) } }) }, 200)) }) }; $.ExistField = function (a, b, d) { var c = $("#" + a); if (!c.val()) return !1; var e = { keyValue: request("keyValue") }; e[a] = c.val(); a = $.extend(e, d); $.ajax({ url: b, data: a, type: "get", dataType: "text", async: !1, success: function (a) { "false" == a.toLocaleLowerCase() ? (ValidationMessage(c, "\u5df2\u5b58\u5728,\u8bf7\u91cd\u65b0\u8f93\u5165"), c.attr("fieldexist", "yes")) : c.attr("fieldexist", "no") }, error: function (a, b, c) { dialogMsg(c, -1) } }) };
+﻿$.SaveForm = function (options) {
+    var defaults = {
+        url: "",
+        param: [],
+        type: "post",
+        dataType: "json",
+        loading: "正在处理数据...",
+        success: null,
+        close: true
+    };
+    var options = $.extend(defaults, options);
+    Loading(true, options.loading);
+    if ($('[name=__RequestVerificationToken]').length > 0) {
+        options.param["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+    }    
+    window.setTimeout(function () {
+        $.ajax({
+            url: options.url,
+            data: options.param,
+            type: options.type,
+            dataType: options.dataType,
+            success: function (data) {               
+                if (data.IsSuccess) {
+                    Loading(false);
+                    dialogMsg(data.Message, 1);
+                    options.success(data);
+                    if (options.close == true) {
+                        dialogClose();
+                    }
+                } else {
+                    dialogAlert(data.Message, -1);
+                }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+                Loading(false);               
+                dialogMsg(errorThrown, -1);
+            },
+            beforeSend: function () {
+                Loading(true, options.loading);
+            },
+            complete: function () {
+                Loading(false);
+            }
+        });
+    }, 500);
+}
+$.SetForm = function (options) {
+    var defaults = {
+        url: "",
+        param: [],
+        type: "get",
+        dataType: "json",
+        success: null,
+        async: false
+    };
+    var options = $.extend(defaults, options);
+    $.ajax({
+        url: options.url,
+        data: options.param,
+        type: options.type,
+        dataType: options.dataType,
+        async: options.async,
+        success: function (data) {           
+            if (data) {
+                options.success(data);
+            } else {               
+                dialogAlert("methed error", -1);
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+          
+            dialogMsg(errorThrown, -1);
+        }, beforeSend: function () {
+            Loading(true);
+        },
+        complete: function () {
+            Loading(false);
+        }
+    });
+}
+$.RemoveForm = function (options) {
+    var defaults = {
+        msg: "注：您确定要删除吗？该操作将无法恢复",
+        loading: "正在删除数据...",
+        url: "",
+        param: [],
+        type: "post",
+        dataType: "json",
+        success: null
+    };
+    var options = $.extend(defaults, options);
+    dialogConfirm(options.msg, function (r) {
+        if (r) {
+            Loading(true, options.loading);
+            window.setTimeout(function () {
+                var postdata = options.param;
+                if ($('[name=__RequestVerificationToken]').length > 0) {
+                    postdata["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+                }
+                $.ajax({
+                    url: options.url,
+                    data: postdata,
+                    type: options.type,
+                    dataType: options.dataType,
+                    success: function (data) {
+                        if (data.IsSuccess) {
+                            dialogMsg(data.Message, 1);
+                            options.success(data);
+                        } else {
+                            dialogAlert(data.Message, -1);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        Loading(false);
+                        dialogMsg(errorThrown, -1);
+                    },
+                    beforeSend: function () {
+                        Loading(true, options.loading);
+                    },
+                    complete: function () {
+                        Loading(false);
+                    }
+                });
+            }, 500);
+        }
+    });
+}
+$.ConfirmAjax = function (options) {
+    var defaults = {
+        msg: "提示信息",
+        loading: "正在处理数据...",
+        url: "",
+        param: [],
+        type: "post",
+        dataType: "json",
+        success: null
+    };
+    var options = $.extend(defaults, options);
+    dialogConfirm(options.msg, function (r) {
+        if (r) {
+            Loading(true, options.loading);
+            window.setTimeout(function () {
+                var postdata = options.param;
+                if ($('[name=__RequestVerificationToken]').length > 0) {
+                    postdata["__RequestVerificationToken"] = $('[name=__RequestVerificationToken]').val();
+                }
+                $.ajax({
+                    url: options.url,
+                    data: postdata,
+                    type: options.type,
+                    dataType: options.dataType,
+                    success: function (data) {
+                        Loading(false);
+                        if (data.IsSuccess) {
+                            dialogMsg(data.Message, 1);
+                            options.success(data);
+                        } else {
+                            dialogAlert(data.Message, -1);
+                        }
+                    },
+                    error: function (XMLHttpRequest, textStatus, errorThrown) {
+                        Loading(false);
+                        dialogMsg(errorThrown, -1);
+                    },
+                    beforeSend: function () {
+                        Loading(true, options.loading);
+                    },
+                    complete: function () {
+                        Loading(false);
+                    }
+                });
+            }, 200);
+        }
+    });
+}
+$.ExistField = function (controlId, url, param) {
+    var $control = $("#" + controlId);
+    if (!$control.val()) {
+        return false;
+    }
+    var data = {
+        keyValue: request('keyValue')
+    };
+    data[controlId] = $control.val();
+    var options = $.extend(data, param);
+    $.ajax({
+        url: url,
+        data: options,
+        type: "get",
+        dataType: "text",
+        async: false,
+        success: function (data) {
+            if (data.toLocaleLowerCase() == 'false') {
+                ValidationMessage($control, '已存在,请重新输入');
+                $control.attr('fieldexist', 'yes');
+            } else {
+                $control.attr('fieldexist', 'no');
+            }
+        },
+        error: function (XMLHttpRequest, textStatus, errorThrown) {
+            dialogMsg(errorThrown, -1);
+        }
+    });
+}
+
+
+
+
+
