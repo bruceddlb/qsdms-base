@@ -143,6 +143,7 @@
     <Compile Include="Reflector.cs" />
     <Compile Include="ReturnMessage.cs" />
     <Compile Include="Reverser.cs" />
+    <Compile Include="RMBHelper.cs" />
     <Compile Include="Serializer.cs" />
     <Compile Include="SHA1Util.cs" />
     <Compile Include="SignHelper.cs" />
